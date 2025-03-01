@@ -62,7 +62,7 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
 @router.message(Form.registration_skills)
 async def registration_get_skills(message: Message, state: FSMContext):
     user['skills'] = message.text
-    add_new_user('11111')
+    add_new_user(message.chat.id)  # поменять на запрос username
     await message.answer('Регистрация завершена. Ждите подтверждения')
     await state.set_state(Form.registration_skills)
 
