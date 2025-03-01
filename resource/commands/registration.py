@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 
 from .forms import Form
 from config import *
+from db.db_request.new_user import new_user
 
 router = Router()
 
@@ -24,10 +25,10 @@ async def registration_get_psw(message: Message, state: FSMContext):
         user['role'] = 1
     elif psw == ADMIN_PSW:
         user['role'] = 2
-    elif psw == INTERNS_PSW:
+    elif psw == INTERN_PSW:
         user['role'] = 3
     else:
-        await message.answer('Пароль неверный:')
+        await message.answer('Ключ неверный:')
         return
     await message.answer('Введите фамилию:')
     await state.set_state(Form.registration_surname)
@@ -61,5 +62,11 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
 @router.message(Form.registration_skills)
 async def registration_get_skills(message: Message, state: FSMContext):
     user['skills'] = message.text
+    add_new_user('11111')
     await message.answer('Регистрация завершена. Ждите подтверждения')
     await state.set_state(Form.registration_skills)
+
+
+def add_new_user(username):
+    global user
+    new_user(username, user['role'], user['surname'], user['name'], user['middle_name'])

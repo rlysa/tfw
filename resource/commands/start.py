@@ -17,5 +17,5 @@ async def start(message: Message, state: FSMContext):
 Для дальнейшей работы пройдите регистрацию!
     ''')
     time.sleep(3)
-    await message.answer('Введите пароль, выданный администратором:')
+    await message.answer('Введите ключ, выданный администратором:')
     await state.set_state(Form.registration_psw)
