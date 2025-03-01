@@ -4,7 +4,6 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
 from .forms import Form
-from config import *
 
 import time
 
@@ -19,11 +18,4 @@ async def start(message: Message, state: FSMContext):
     ''')
     time.sleep(3)
     await message.answer('Введите пароль, выданный администратором:')
-    await state.set_state(Form.start)
-
-
-@router.message(Form.start)
-async def get_psw(message: Message, state: FSMContext):
-    psw = message.text
-    if psw == ADMIN_PSW:
-        pass
+    await state.set_state(Form.registration_psw)

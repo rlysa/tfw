@@ -10,6 +10,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 dp.include_router(start_router)
+dp.include_router(registration_router)
 
 
 async def main():
