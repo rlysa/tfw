@@ -7,7 +7,7 @@ def admins():
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS Admins (
-username INTEGER PRIMARY KEY,
+username TEXT PRIMARY KEY,
 key TEXT
 )
 ''')

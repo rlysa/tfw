@@ -55,6 +55,7 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
         await message.answer('Укажите ваши скиллы:')
         await state.set_state(Form.registration_skills)
     else:
+        add_new_user(message.from_user.username)
         await message.answer('Регистрация завершена. Ждите подтверждения')
         await state.set_state(Form.registration_skills)
 
@@ -62,11 +63,11 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
 @router.message(Form.registration_skills)
 async def registration_get_skills(message: Message, state: FSMContext):
     user['skills'] = message.text
-    add_new_user(message.chat.id)  # поменять на запрос username
+    add_new_user(message.from_user.username)
     await message.answer('Регистрация завершена. Ждите подтверждения')
     await state.set_state(Form.registration_skills)
 
 
 def add_new_user(username):
     global user
-    new_user(username, user['role'], user['surname'], user['name'], user['middle_name'])
+    new_user(username, user['role'], user['surname'], user['name'], user['middle_name'], user['skills'], '3456')  # поменять на ключ админа
