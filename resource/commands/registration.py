@@ -26,10 +26,15 @@ async def registration_get_psw(message: Message, state: FSMContext):
         user['role'] = 1
     elif psw == ADMIN_PSW:
         user['role'] = 2
+<<<<<<< Updated upstream
     elif psw.isdigit():
         if is_admins_key(int(psw)):
             user['admin'] = psw
             user['role'] = 3
+=======
+    elif psw == INTERN_PSW:
+        user['role'] = 3
+>>>>>>> Stashed changes
     else:
         await message.answer('Ключ неверный')
         return
