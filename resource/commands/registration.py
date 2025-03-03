@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from .forms import Form
 from config import *
 from db.db_request.new_user import new_user
+from db.db_request.is_admins_key import is_admins_key
 
 router = Router()
 
@@ -13,7 +14,7 @@ user = {
     'surname': '',
     'name': '',
     'middle_name': '',
-    'username': '',
+    'admin': '',
 }
 
 
@@ -25,10 +26,12 @@ async def registration_get_psw(message: Message, state: FSMContext):
         user['role'] = 1
     elif psw == ADMIN_PSW:
         user['role'] = 2
-    elif psw == INTERN_PSW:
-        user['role'] = 3
+    elif psw.isdigit():
+        if is_admins_key(int(psw)):
+            user['admin'] = psw
+            user['role'] = 3
     else:
-        await message.answer('Ключ неверный:')
+        await message.answer('Ключ неверный')
         return
     await message.answer('Введите фамилию:')
     await state.set_state(Form.registration_surname)
@@ -70,4 +73,4 @@ async def registration_get_skills(message: Message, state: FSMContext):
 
 def add_new_user(username):
     global user
-    new_user(username, user['role'], user['surname'], user['name'], user['middle_name'], user['skills'], '3456')  # поменять на ключ админа
+    new_user(username, user)

@@ -9,8 +9,8 @@ def users():
     cursor.execute('''CREATE TABLE IF NOT EXISTS Users (
 username TEXT PRIMARY KEY,
 role INTEGER,
-name TEXT,
 surname TEXT,
+name TEXT,
 middle_name TEXT
 )
 ''')

@@ -8,25 +8,26 @@ def is_new_user(username):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
     usernames = cursor.execute('''SELECT username FROM Users''').fetchall()
+    connection.close()
     return (username, ) not in usernames
 
 
-def new_user(username, role, name, surname, middle_name, skills, admin):
+def new_user(username, user):
+    role, surname, name, middle_name = user['role'], user['surname'], user['name'], user['middle_name']
+
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
-    cursor.execute('''INSERT INTO Users (username, role, name, surname, middle_name)
-VALUES (?, ?, ?, ?, ?)''',
-                   (username, role, name, surname, middle_name))
+    cursor.execute('''INSERT INTO Users (username, role, surname, name, middle_name) VALUES (?, ?, ?, ?, ?)''',
+                   (username, role, surname, name, middle_name))
 
     if role == 3:
-        cursor.execute('''INSERT INTO Interns (username, skills, admin)
-        VALUES (?, ?, ?)''',
-                       (username, skills, admin))
+        admin = cursor.execute(f'''SELECT username FROM Admins WHERE key={user['admin']}''').fetchone()[0]
+        cursor.execute('''INSERT INTO Interns (username, skills, admin) VALUES (?, ?, ?)''',
+                       (username, user['skills'], admin))
     else:
-        key = ''.join([chr(i) for i in choices(list(range(48, 58)) + list(range(65, 91)) + list(range(97, 123)), k=8)])
-        cursor.execute('''INSERT INTO Admins (username, key)
-VALUES (?, ?)''',
-                       (username, key))
+        key = int(''.join(choices([f'{i}' for i in range(0, 10)], k=8)))
+        cursor.execute('''INSERT INTO Admins (key, username) VALUES (?, ?)''',
+                       (key, username))
 
     connection.commit()
     connection.close()
