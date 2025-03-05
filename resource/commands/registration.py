@@ -15,6 +15,7 @@ user = {
     'name': '',
     'middle_name': '',
     'admin': '',
+    'login': 0
 }
 
 
@@ -22,14 +23,18 @@ user = {
 async def registration_get_psw(message: Message, state: FSMContext):
     psw = message.text
     global user
+    user['login'] += 1
+    if user['login'] >= 5:
+        await message.answer('Количество попыток закончилось. Доступ ограничен')
+        await state.set_state(Form.block)
+        return
     if psw == ADMIN_FATHER_PSW:
         user['role'] = 1
     elif psw == ADMIN_PSW:
         user['role'] = 2
-    elif psw.isdigit():
-        if is_admins_key(int(psw)):
-            user['admin'] = psw
-            user['role'] = 3
+    elif is_admins_key(psw):
+        user['admin'] = psw
+        user['role'] = 3
     else:
         await message.answer('Ключ неверный')
         return

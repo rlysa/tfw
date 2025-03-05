@@ -7,5 +7,6 @@ def is_admins_key(key):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
     keys = cursor.execute('''SELECT key FROM Admins''').fetchall()
+    keys = [f'{i[0]}' for i in keys]
     connection.close()
-    return (key,) in keys
+    return key in keys
