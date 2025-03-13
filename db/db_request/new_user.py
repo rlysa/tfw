@@ -25,7 +25,7 @@ def new_user(username, user):
         cursor.execute('''INSERT INTO Interns (username, skills, admin) VALUES (?, ?, ?)''',
                        (username, user['skills'], admin))
     else:
-        key = int(''.join(choices([f'{i}' for i in range(0, 10)], k=8)))
+        key = int(''.join(choices([f'{i}' for i in range(0, 10)], k=8))) if username != 'admin' else 11111111  # создание админа для тестов, пароль, чтоб не смотреть в бд, потом удалить
         cursor.execute('''INSERT INTO Admins (key, username) VALUES (?, ?)''',
                        (key, username))
 

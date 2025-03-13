@@ -72,7 +72,7 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
 async def registration_get_skills(message: Message, state: FSMContext):
     user['skills'] = message.text
     add_new_user(message.from_user.username)
-    await message.answer('Регистрация завершена. Ждите подтверждения')
+    await message.answer('Регистрация завершена (Ждите подтверждения - реализовать)')
     await state.set_state(Form.registration_skills)
 
 
