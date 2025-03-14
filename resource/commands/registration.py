@@ -6,6 +6,7 @@ from .forms import Form
 from config import *
 from db.db_request.new_user import new_user
 from db.db_request.is_admins_key import is_admins_key
+from ..keyboards.admin_keyboard import admin_keyboard
 
 router = Router()
 
@@ -64,8 +65,9 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
         await state.set_state(Form.registration_skills)
     else:
         add_new_user(message.from_user.username)
-        await message.answer('Регистрация завершена. Ждите подтверждения')
-        await state.set_state(Form.registration_skills)
+        await message.answer('Регистрация завершена (Ждите подтверждения - реализовать)',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
 
 
 @router.message(Form.registration_skills)
@@ -73,7 +75,7 @@ async def registration_get_skills(message: Message, state: FSMContext):
     user['skills'] = message.text
     add_new_user(message.from_user.username)
     await message.answer('Регистрация завершена (Ждите подтверждения - реализовать)')
-    await state.set_state(Form.registration_skills)
+    await state.set_state(Form.main_intern)
 
 
 def add_new_user(username):

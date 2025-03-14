@@ -8,8 +8,13 @@ def is_new_user(username):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
     usernames = cursor.execute('''SELECT username FROM Users''').fetchall()
-    connection.close()
-    return (username, ) not in usernames
+    if (username, ) not in usernames:
+        connection.close()
+        return True
+    else:
+        role = cursor.execute(f'''SELECT role FROM Users WHERE username="{username}"''').fetchone()
+        connection.close()
+        return role[0]
 
 
 def new_user(username, user):
