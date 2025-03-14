@@ -9,4 +9,5 @@ class Form(StatesGroup):
     registration_name = State()
     registration_middle_name = State()
     registration_skills = State()
-    main = State()
+    main_admin = State()
+    main_intern = State()
