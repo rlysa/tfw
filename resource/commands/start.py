@@ -24,7 +24,7 @@ async def start(message: Message, state: FSMContext):
         await state.set_state(Form.registration_psw)
     else:
         if is_new == 2:
-            await message.answer('Вы уже зарегистрированыы',
+            await message.answer('Вы уже зарегистрированы',
                                  reply_markup=admin_keyboard)
             await state.set_state(Form.main_admin)
         else:
