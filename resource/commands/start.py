@@ -7,7 +7,7 @@ from .forms import Form
 from db.db_request.new_user import is_new_user
 from resource.keyboards.admin_keyboard import admin_keyboard
 
-import time
+import asyncio
 
 router = Router()
 
@@ -19,7 +19,7 @@ async def start(message: Message, state: FSMContext):
         await message.answer('''Добро пожаловать!
 Данный бот предназначен для упрощения взаимодействия между руководителем и стажерами.
 Для дальнейшей работы пройдите регистрацию!''')
-        time.sleep(3)
+        await asyncio.sleep(3)
         await message.answer('Введите ключ, выданный администратором:')
         await state.set_state(Form.registration_psw)
     else:
