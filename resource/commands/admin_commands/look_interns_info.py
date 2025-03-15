@@ -1,5 +1,5 @@
 from aiogram import Router
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message
 
 from aiogram.fsm.context import FSMContext
 
@@ -16,3 +16,13 @@ async def look_interns_info(callback: CallbackQuery, state: FSMContext):
     info = interns_info(username)
     await callback.message.edit_text(text=f'{info[0]}\n\nСкиллы:\n{info[1]}')
     await state.set_state(Form.main_admin)
+
+
+@router.message(Form.look_interns_info)
+async def look_interns_info(message: Message, state: FSMContext):
+    if message.text.lower() == 'назад':
+        await message.answer('Меню команд',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос')
