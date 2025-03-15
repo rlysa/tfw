@@ -2,7 +2,6 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from .look_interns_info import look_interns_info
 from ..forms import Form
 from ...keyboards.list_of_interns_kb import list_of_interns_kb
 from ...keyboards.admin_keyboard import admin_keyboard
