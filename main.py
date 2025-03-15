@@ -14,6 +14,7 @@ dp = Dispatcher()
 dp.include_router(start_router)
 dp.include_router(registration_router)
 dp.include_router(admin_main_router)
+dp.include_router(look_interns_info_router)
 
 
 def run_db():

@@ -2,6 +2,7 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
+from .look_interns_info import look_interns_info
 from ..forms import Form
 from ...keyboards.list_of_interns_kb import list_of_interns_kb
 from ...keyboards.admin_keyboard import admin_keyboard
@@ -17,6 +18,7 @@ async def main_admin(message: Message, state: FSMContext):
         list_of_interns_kb(message.from_user.username)
         await message.answer('Список стажеров',
                              reply_markup=list_of_interns_kb(message.from_user.username))
+        await state.set_state(Form.look_interns_info)
     elif message.text == 'Группы':
         await message.answer('Список групп',
                              reply_markup=list_of_groups_kb(message.from_user.username))

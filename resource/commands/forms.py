@@ -11,3 +11,4 @@ class Form(StatesGroup):
     registration_skills = State()
     main_admin = State()
     main_intern = State()
+    look_interns_info = State()

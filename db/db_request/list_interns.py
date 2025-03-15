@@ -12,3 +12,11 @@ def list_of_interns(admin):
     interns = [[' '.join(interns_snm[i]), interns_username[i][0]]  for i in range(len(interns_snm))]
     return interns
 
+
+def interns_info(username):
+    connection = sqlite3.connect(DB_NAME)
+    cursor = connection.cursor()
+    intern = cursor.execute(f'''SELECT surname, name, middle_name FROM Users WHERE username="{username}"''').fetchone()
+    interns_skills = cursor.execute(f'''SELECT skills FROM Interns WHERE username="{username}"''').fetchone()
+    intern = [' '.join([i for i in intern]), interns_skills[0]]
+    return intern
