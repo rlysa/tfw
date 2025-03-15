@@ -12,3 +12,4 @@ class Form(StatesGroup):
     main_admin = State()
     main_intern = State()
     look_interns_info = State()
+    look_groups_info = State()

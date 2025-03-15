@@ -21,6 +21,7 @@ async def main_admin(message: Message, state: FSMContext):
     elif message.text == 'Группы':
         await message.answer('Список групп',
                              reply_markup=list_of_groups_kb(message.from_user.username))
+        await state.set_state(Form.look_groups_info)
     else:
         await message.answer('Некорректный запрос',
                              reply_markup=admin_keyboard)
