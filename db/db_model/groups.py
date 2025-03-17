@@ -1,17 +1,11 @@
-import sqlite3
+import sqlalchemy
+from .db_session import SqlAlchemyBase
 
-from config import DB_NAME
 
+class Groups(SqlAlchemyBase):
+    __tablename__ = 'Groups'
 
-def groups():
-    connection = sqlite3.connect(DB_NAME)
-    cursor = connection.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS Groups (
-id INTEGER PRIMARY KEY,
-name TEXT,
-admin TEXT,
-interns TEXT
-)
-''')
-    connection.commit()
-    connection.close()
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, unique=True)
+    name = sqlalchemy.Column(sqlalchemy.String)
+    admin = sqlalchemy.Column(sqlalchemy.String)
+    interns = sqlalchemy.Column(sqlalchemy.String)

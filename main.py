@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 
 from config import TOKEN
 from resource.commands.__routers import *
-from db.db_model.__all_models import *
+from db.db_model.db_session import global_init
 from db.db_request.new_user import *
 
 
@@ -19,25 +19,21 @@ dp.include_router(look_groups_info_router)
 
 
 def run_db():
-    users()
-    admins()
-    interns()
-    groups()
-    tasks()
+    global_init(DB_NAME)
     if is_new_user('admin') == True:
-        new_user('admin', {'role': 2,
-                           'surname': 'Admin',
-                           'name': 'Admin',
-                           'middle_name': 'Admin',
-                           'admin': ''
-                           }
-                 )  # админ для тестов
+         new_user('admin', {'role': 2,
+                            'surname': 'Admin',
+                            'name': 'Admin',
+                            'middle_name': 'Admin',
+                            'admin': ''
+                            }
+                  )  # админ для тестов
 
 
 async def main():
-    run_db()
     await dp.start_polling(bot)
 
 
 if __name__ == '__main__':
+    run_db()
     asyncio.run(main())

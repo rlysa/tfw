@@ -1,18 +1,16 @@
-import sqlite3
+import sqlalchemy
+from .db_session import SqlAlchemyBase
 
-from config import DB_NAME
 
+class Users(SqlAlchemyBase):
+    __tablename__ = 'Users'
 
-def users():
-    connection = sqlite3.connect(DB_NAME)
-    cursor = connection.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS Users (
-username TEXT PRIMARY KEY,
-role INTEGER,
-surname TEXT,
-name TEXT,
-middle_name TEXT
-)
-''')
-    connection.commit()
-    connection.close()
+    ADMIN_FATHER = 1
+    ADMIN = 2
+    INTERN = 3
+
+    username = sqlalchemy.Column(sqlalchemy.String, primary_key=True, unique=True)
+    role = sqlalchemy.Column(sqlalchemy.Integer)
+    surname = sqlalchemy.Column(sqlalchemy.String)
+    name = sqlalchemy.Column(sqlalchemy.String)
+    middle_name = sqlalchemy.Column(sqlalchemy.String)

@@ -1,16 +1,10 @@
-import sqlite3
+import sqlalchemy
+from .db_session import SqlAlchemyBase
 
-from config import DB_NAME
 
+class Interns(SqlAlchemyBase):
+    __tablename__ = 'Interns'
 
-def interns():
-    connection = sqlite3.connect(DB_NAME)
-    cursor = connection.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS Interns (
-username TEXT PRIMARY KEY,
-skills TEXT,
-admin TEXT
-)
-''')
-    connection.commit()
-    connection.close()
+    username = sqlalchemy.Column(sqlalchemy.String, primary_key=True, unique=True)
+    skills = sqlalchemy.Column(sqlalchemy.String)
+    admin = sqlalchemy.Column(sqlalchemy.String)

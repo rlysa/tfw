@@ -1,15 +1,9 @@
-import sqlite3
+import sqlalchemy
+from .db_session import SqlAlchemyBase
 
-from config import DB_NAME
 
+class Admins(SqlAlchemyBase):
+    __tablename__ = 'Admins'
 
-def admins():
-    connection = sqlite3.connect(DB_NAME)
-    cursor = connection.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS Admins (
-key INTEGER PRIMARY KEY,
-username TEXT
-)
-''')
-    connection.commit()
-    connection.close()
+    key = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, unique=True)
+    username = sqlalchemy.Column(sqlalchemy.String)
