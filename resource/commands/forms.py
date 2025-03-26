@@ -13,3 +13,4 @@ class Form(StatesGroup):
     main_intern = State()
     look_interns_info = State()
     look_groups_info = State()
+    view_the_task_list = State()
