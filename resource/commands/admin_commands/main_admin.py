@@ -13,7 +13,12 @@ router = Router()
 
 @router.message(Form.main_admin)
 async def main_admin(message: Message, state: FSMContext):
-    if message.text == 'Стажеры':
+    if message.text == 'Создать задачу':
+        await message.answer('Введите название задачи:')
+        await state.set_state(Form.create_task_name)
+    elif message.text == 'Создать группу':
+        await message.answer('Находится в разработке:')
+    elif message.text == 'Стажеры':
         await message.answer('Список стажеров:',
                              reply_markup=list_of_interns_kb(message.from_user.username))
         await state.set_state(Form.look_interns_info)
