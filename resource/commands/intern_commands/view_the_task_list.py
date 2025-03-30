@@ -1,51 +1,59 @@
-#Посмотреть список задач (отсортированы по дедлайнам)
-
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from ..forms import Form
-from db.db_request.list_tasks import list_tasks
-from ...keyboards.list_of_tasks_kb import list_of_tasks_kb
+from resource.keyboards.list_of_tasks_kb import list_of_tasks_kb
+from ..forms import Form  # Импорт класса Form
+import logging
+from datetime import datetime
 
 router = Router(name="view_the_task_list_router")
+logger = logging.getLogger(__name__)
 
 
-@router.callback_query(Form.view_the_task_list)
-async def view_task_list(callback: CallbackQuery, state: FSMContext):
-    # Обработка callback для состояния view_the_task_list
-    username = callback.from_user.username
-    keyboard = list_of_tasks_kb(username)
+@router.message(Command("tasks"))
+async def handle_tasks_command(message: Message, state: FSMContext):
+    """Обработчик команды /tasks"""
+    try:
+        username = message.from_user.username
+        logger.info(f"User {username} requested tasks")
 
-    if not keyboard:
-        await callback.message.answer("🎉 Поздравляем! У вас пока нет активных задач.")
-    else:
-        await callback.message.answer(
-            "📋 Список ваших текущих задач (отсортирован по срокам выполнения):",
+        keyboard = list_of_tasks_kb(username)
+
+        if not keyboard or not keyboard.inline_keyboard:
+            await message.answer("🎉 У вас пока нет активных задач")
+            return
+
+        await message.answer(
+            f"📋 Список задач (обновлено: {datetime.now().strftime('%H:%M:%S')})",
             reply_markup=keyboard
         )
+        await state.set_state(Form.view_the_task_list)
+
+    except Exception as e:
+        logger.error(f"Error in /tasks command: {e}")
+        await message.answer("⚠️ Ошибка при загрузке задач")
 
 
-# Отдельный обработчик для кнопки "show_my_tasks"
-@router.callback_query(lambda callback: callback.data == "show_my_tasks")
-async def handle_show_my_tasks(callback: CallbackQuery, state: FSMContext):
-    username = callback.from_user.username
-    keyboard = list_of_tasks_kb(username)
+@router.callback_query(F.data == "refresh_tasks")
+async def handle_refresh_tasks(callback: CallbackQuery, state: FSMContext):
+    """Обработчик обновления списка задач"""
+    try:
+        username = callback.from_user.username
+        keyboard = list_of_tasks_kb(username)
 
-    if not keyboard:
-        await callback.message.answer("🎉 Поздравляем! У вас пока нет активных задач.")
-    else:
-        await callback.message.answer(
-            "📋 Список ваших текущих задач (отсортирован по срокам выполнения):",
-            reply_markup=keyboard
-        )
+        if not keyboard or not keyboard.inline_keyboard:
+            await callback.message.edit_text(
+                f"🎉 Нет активных задач (обновлено: {datetime.now().strftime('%H:%M:%S')})"
+            )
+        else:
+            await callback.message.edit_text(
+                f"📋 Список задач (обновлено: {datetime.now().strftime('%H:%M:%S')})",
+                reply_markup=keyboard
+            )
 
-    await state.set_state(Form.view_the_task_list)
+        await callback.answer("✅ Список обновлен")
 
-
-@router.message(Form.view_the_task_list)
-async def handle_task_list_message(message: Message, state: FSMContext):
-    if message.text and message.text.lower() == 'назад':
-        await message.answer("🔙 Возвращаемся в главное меню")
-        await state.set_state(Form.main_intern)
-    else:
-        await message.answer("Пожалуйста, используйте кнопки для навигации")
+    except Exception as e:
+        logger.error(f"Error refreshing tasks: {e}")
+        await callback.answer("⚠️ Ошибка при обновлении")

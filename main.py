@@ -17,6 +17,7 @@ dp.include_router(admin_main_router)
 dp.include_router(look_interns_info_router)
 dp.include_router(look_groups_info_router)
 dp.include_router(view_the_task_list_router)
+dp.include_router(view_task_description_router)
 
 
 def run_db():

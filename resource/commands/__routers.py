@@ -4,3 +4,4 @@ from .admin_commands.main_admin import router as admin_main_router
 from .admin_commands.look_interns_info import router as look_interns_info_router
 from .admin_commands.look_groups_info import router as look_groups_info_router
 from .intern_commands.view_the_task_list import router as view_the_task_list_router
+from .intern_commands.view_task_description import router as view_task_description_router

@@ -1,23 +1,34 @@
 import sqlite3
+from typing import List, Tuple
 from config import DB_NAME
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-def list_tasks(intern_username):
-    """
-    Получает список задач конкретного стажёра
-    :param intern_username: username стажера
-    :return: список задач в формате [(id, title, description, status, deadline), ...]
-    """
-    connection = sqlite3.connect(DB_NAME)
-    cursor = connection.cursor()
+def list_tasks(intern_username: str) -> List[Tuple[int, str, str, str, str]]:
+    """Получает список задач пользователя из БД"""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT id, name, description, done, deadline 
+                FROM Tasks 
+                WHERE interns = ?
+                ORDER BY deadline ASC
+            """, (intern_username,))
 
-    query = """
-    SELECT id, title, description, status, deadline 
-    FROM Tasks
-    WHERE intern_username=?
-    ORDER BY deadline ASC
-    """
+            tasks = []
+            for task in cursor.fetchall():
+                task_id, name, description, done, deadline = task
+                status = "completed" if done else "in_progress"
+                tasks.append((task_id, name, description, status, deadline))
 
-    tasks = cursor.execute(query, (intern_username,)).fetchall()
-    connection.close()
-    return tasks
+            return tasks
+
+    except sqlite3.Error as e:
+        logger.error(f"Database error in list_tasks: {e}")
+        return []
+    except Exception as e:
+        logger.error(f"Unexpected error in list_tasks: {e}")
+        return []
