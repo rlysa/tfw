@@ -15,4 +15,5 @@ class Form(StatesGroup):
     look_groups_info = State()
     view_the_task_list = State()
     view_group_composition = State()
+    view_my_info = State()
     main_menu = State()

@@ -4,8 +4,7 @@ from db.db_request.list_tasks import list_tasks
 
 def list_of_tasks_kb(username: str) -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру со списком задач
-    без кнопки 'Назад', только с кнопкой 'Обновить'
+    Создает клавиатуру со списком задач и кнопкой "Назад в меню"
     """
     tasks = list_tasks(username)
     buttons = []
@@ -24,13 +23,18 @@ def list_of_tasks_kb(username: str) -> InlineKeyboardMarkup:
                     callback_data=f"view_task_{task_id}"
                 )
             ])
+    else:
+        buttons.append([
+            InlineKeyboardButton(
+                text="🎉 Нет активных задач",
+                callback_data="no_tasks"
+            )
+        ])
 
-    # Всегда добавляем кнопку обновления
+    # Кнопки управления (Обновить и Назад)
     buttons.append([
-        InlineKeyboardButton(
-            text="🔄 Обновить список",
-            callback_data="refresh_tasks"
-        )
+        InlineKeyboardButton(text="🔄 Обновить", callback_data="refresh_tasks"),
+        InlineKeyboardButton(text="🔙 Назад в меню", callback_data="back_to_menu")
     ])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)

@@ -6,4 +6,5 @@ from .admin_commands.look_groups_info import router as look_groups_info_router
 from .intern_commands.view_the_task_list import router as view_the_task_list_router
 from .intern_commands.view_task_description import router as view_task_description_router
 from .intern_commands.view_group_composition import router as view_group_composition_router
+from .intern_commands.view_check_my_info import router as view_check_my_info_router
 from .intern_commands.action_selection_menu import router as action_selection_menu_router

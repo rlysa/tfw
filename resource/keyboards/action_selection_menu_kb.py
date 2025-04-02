@@ -1,19 +1,19 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 def get_action_selection_menu() -> InlineKeyboardMarkup:
-    """Главное меню с кнопкой просмотра группы"""
+    """Создает клавиатуру главного меню"""
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text="📋 Мои задачи",
-                    callback_data="show_my_tasks"
+                    callback_data="show_my_tasks"  # Должно совпадать с обработчиком
                 )
             ],
             [
                 InlineKeyboardButton(
                     text="👥 Моя группа",
-                    callback_data="show_my_group"  # Добавлена кнопка просмотра группы
+                    callback_data="show_my_group"
                 )
             ],
             [
