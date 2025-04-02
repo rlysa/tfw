@@ -27,10 +27,10 @@ async def show_task_description(message: Message, task_id: int):
     is_done = status == "✅ Завершена"
 
     message_text = (
-        f"📌 <b>{name}</b>\n\n"
-        f"📝 <b>Описание:</b>\n{description}\n\n"
-        f"⏳ <b>Срок выполнения:</b> {deadline}\n"
-        f"🔄 <b>Статус:</b> {status}"
+        f"📌 {name}\n\n"
+        f"📝 Описание:\n{description}\n\n"
+        f"⏳ Срок выполнения: {deadline}\n"
+        f"🔄 Статус: {status}"
     )
 
     await message.edit_text(
