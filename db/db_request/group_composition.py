@@ -17,10 +17,10 @@ def get_group_composition(user_username: str) -> Optional[dict]:
             cursor = conn.cursor()
 
             cursor.execute("""
-                SELECT id, name, admin, interns 
-                FROM Groups
-                WHERE admin = ? OR interns LIKE ? OR interns LIKE ? OR interns LIKE ?
-            """, (
+                            SELECT id, name, admin, interns 
+                            FROM Groups
+                            WHERE admin = ? OR interns LIKE ? OR interns LIKE ? OR interns LIKE ?
+                        """, (
                 user_username.lower(),
                 f"{user_username.lower()} %",
                 f"% {user_username.lower()}",

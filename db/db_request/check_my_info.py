@@ -5,7 +5,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 def get_user_info(username: str) -> Optional[dict]:
     """Получает информацию о пользователе по его username"""
     try:
