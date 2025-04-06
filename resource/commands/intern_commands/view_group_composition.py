@@ -12,51 +12,92 @@ logger = logging.getLogger(__name__)
 
 
 def format_group_message(group_data: dict) -> str:
+    """Форматирует информацию о группе в читаемый текст"""
     message = [
-        f"👥 <b>Группа:</b> {group_data['group_name']}",
-        f"👨‍💼 <b>Руководитель:</b> {group_data['admin_info']['full_name']} (@{group_data['admin_info']['username']})",
-        "",
-        "📌 <b>Стажёры в группе:</b>"
+        f"👥 Группа: {group_data['group_name']}",
+        f"👨‍💼 Руководитель: {group_data['admin_info']['full_name']} (@{group_data['admin_info']['username']})\n",
+        "📌 Стажёры в группе:"
     ]
 
-    for i, intern in enumerate(group_data['interns_info'], 1):
+    # Добавляем информацию о каждом стажёре
+    interns = group_data.get('interns_info', [])
+    for i, intern in enumerate(interns, 1):
         message.append(f"{i}. {intern['full_name']} (@{intern['username']})")
 
-    if not group_data['interns_info']:
+    if not interns:
         message.append("Других стажёров в группе нет")
 
     return "\n".join(message)
 
 
-async def show_user_group(message: Message, state: FSMContext):
+async def process_group_request(source: CallbackQuery | Message, state: FSMContext):
+    """Обрабатывает запрос на просмотр группы"""
     try:
-        username = message.from_user.username
+        user = source.from_user
+        username = user.username
+
         if not username:
-            await message.answer("❌ У вас не установлен username в Telegram")
+            error_msg = "❌ Для просмотра группы нужно установить username в настройках Telegram"
+            if isinstance(source, CallbackQuery):
+                await source.answer(error_msg, show_alert=True)
+            else:
+                await source.answer(error_msg)
             return
+
+        logger.debug(f"Запрос группы от @{username} (ID: {user.id})")
 
         group_data = get_group_composition(username)
+
         if not group_data:
-            await message.answer("ℹ️ Вы не состоите ни в одной группе")
+            debug_msg = (
+                f"ℹ️ Вы не состоите ни в одной группе\n\n"
+                f"Username: @{username}\n"
+                f"User ID: {user.id}"
+            )
+            if isinstance(source, CallbackQuery):
+                await source.message.edit_text(debug_msg)
+            else:
+                await source.answer(debug_msg)
             return
 
-        await message.answer(
-            text=format_group_message(group_data),
-            reply_markup=get_group_composition_kb()
-        )
+        response = format_group_message(group_data)
+
+        if isinstance(source, CallbackQuery):
+            await source.message.edit_text(
+                text=response,
+                reply_markup=get_group_composition_kb()
+            )
+        else:
+            await source.answer(
+                text=response,
+                reply_markup=get_group_composition_kb()
+            )
+
         await state.set_state(Form.view_group_composition)
 
     except Exception as e:
-        logger.error(f"Error showing group: {e}")
-        await message.answer("⚠️ Ошибка при загрузке группы")
+        error_msg = (
+            f"⚠️ Произошла ошибка при загрузке группы\n\n"
+            f"Username: @{getattr(user, 'username', 'не определен')}\n"
+            f"Ошибка: {str(e)}"
+        )
+        logger.error(f"Ошибка при обработке запроса группы: {str(e)}")
+        if isinstance(source, CallbackQuery):
+            await source.answer(error_msg, show_alert=True)
+        else:
+            await source.answer(error_msg)
+    finally:
+        if isinstance(source, CallbackQuery):
+            await source.answer()
 
 
 @router.callback_query(F.data == "show_my_group")
-async def handle_show_my_group(callback: CallbackQuery, state: FSMContext):
-    await show_user_group(callback.message, state)
-    await callback.answer()
+async def show_group_handler(callback: CallbackQuery, state: FSMContext):
+    """Обработчик нажатия кнопки 'Моя группа'"""
+    await process_group_request(callback, state)
 
 
 @router.message(Command("my_group"))
-async def handle_my_group_command(message: Message, state: FSMContext):
-    await show_user_group(message, state)
+async def group_command_handler(message: Message, state: FSMContext):
+    """Обработчик команды /my_group"""
+    await process_group_request(message, state)

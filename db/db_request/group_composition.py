@@ -16,22 +16,33 @@ def get_group_composition(user_username: str) -> Optional[dict]:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
 
+            # Ищем группу, где пользователь является админом
             cursor.execute("""
-                            SELECT id, name, admin, interns 
-                            FROM Groups
-                            WHERE admin = ? OR interns LIKE ? OR interns LIKE ? OR interns LIKE ?
-                        """, (
-                user_username.lower(),
+                SELECT id, name, admin, interns 
+                FROM Groups
+                WHERE admin = ?
+            """, (user_username.lower(),))
+            group_as_admin = cursor.fetchone()
+
+            # Ищем группу, где пользователь является стажёром
+            cursor.execute("""
+                SELECT id, name, admin, interns 
+                FROM Groups
+                WHERE interns LIKE ? OR interns LIKE ? OR interns = ?
+            """, (
                 f"{user_username.lower()} %",
                 f"% {user_username.lower()}",
-                f"% {user_username.lower()} %"
+                user_username.lower()
             ))
+            group_as_intern = cursor.fetchone()
 
-            group = cursor.fetchone()
+            # Объединяем результаты (пользователь может быть только в одной группе)
+            group = group_as_admin or group_as_intern
 
             if not group:
                 return None
 
+            # Получаем информацию об админе группы
             cursor.execute("""
                 SELECT surname, name, middle_name 
                 FROM Users 
@@ -47,11 +58,16 @@ def get_group_composition(user_username: str) -> Optional[dict]:
                 'username': group['admin']
             }
 
+            # Обрабатываем стажёров
             interns_info = []
             interns = group['interns'] or ""
-            for intern_username in [u.strip() for u in interns.split() if u.strip()]:
+
+            # Разделяем строку стажёров и фильтруем пустые значения
+            intern_usernames = [u.strip() for u in interns.split() if u.strip()]
+
+            for intern_username in intern_usernames:
                 if intern_username.lower() == user_username.lower():
-                    continue
+                    continue  # Пропускаем текущего пользователя
 
                 cursor.execute("""
                     SELECT surname, name, middle_name 
