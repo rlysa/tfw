@@ -8,3 +8,4 @@ from .intern_commands.view_task_description import router as view_task_descripti
 from .intern_commands.view_group_composition import router as view_group_composition_router
 from .intern_commands.view_check_my_info import router as view_check_my_info_router
 from .intern_commands.action_selection_menu import router as action_selection_menu_router
+from .intern_commands.change_my_info import router as change_my_info_router

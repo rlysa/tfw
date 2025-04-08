@@ -17,3 +17,4 @@ class Form(StatesGroup):
     view_group_composition = State()
     view_my_info = State()
     main_menu = State()
+    changing_info = State()

@@ -21,7 +21,7 @@ dp.include_router(view_task_description_router)
 dp.include_router(view_group_composition_router)
 dp.include_router(action_selection_menu_router)
 dp.include_router(view_check_my_info_router)
-
+dp.include_router(change_my_info_router)
 
 def run_db():
     global_init(DB_NAME)

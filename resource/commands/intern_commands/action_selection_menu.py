@@ -18,7 +18,7 @@ async def show_main_menu(message: Message, state: FSMContext):
     """Показ главного меню"""
     try:
         await message.answer(
-            "📌 <b>Главное меню</b>\nВыберите действие:",
+            "📌 Главное меню\nВыберите действие:",
             reply_markup=get_action_selection_menu()
         )
         await state.set_state(Form.main_menu)
@@ -60,9 +60,9 @@ async def handle_show_my_group(callback: CallbackQuery, state: FSMContext):
             return
 
         await callback.message.edit_text(
-            text=f"👥 <b>Группа:</b> {group_data['group_name']}\n"
-                 f"👨‍💼 <b>Руководитель:</b> {group_data['admin_info']['full_name']}\n"
-                 "📌 <b>Стажёры:</b>\n" +
+            text=f"👥 Группа: {group_data['group_name']}\n"
+                 f"👨‍💼 Руководитель: {group_data['admin_info']['full_name']}\n"
+                 "📌 Стажёры:\n" +
                  "\n".join([f"{i}. {i['full_name']}" for i in group_data['interns_info']]),
             reply_markup=get_group_composition_kb()
         )

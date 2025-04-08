@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def format_complete_user_info(user_data: dict) -> str:
-    """Форматирует полную информацию о пользователе с навыками"""
+    """Форматирует информацию о пользователе"""
     role_map = {
         1: "👑 Главный администратор",
         2: "👨‍💼 Администратор",
@@ -20,64 +20,46 @@ def format_complete_user_info(user_data: dict) -> str:
     }
 
     message = [
-        "👤 ПОЛНАЯ ИНФОРМАЦИЯ",
+        "👤 Ваша информация:",
         "",
-        f"📛 ФИО: {user_data.get('surname', '')} {user_data.get('name', '')} {user_data.get('middle_name', '')}",
-        f"🔹 Логин: @{user_data.get('username', '')}",
-        f"👔 Роль: {role_map.get(user_data.get('role'), 'Неизвестно')}",
+        f"📛 ФИО: {user_data['surname']} {user_data['name']} {user_data['middle_name']}",
+        f"🔹 Логин: @{user_data['username']}",
+        f"👔 Роль: {role_map.get(user_data['role'], 'Неизвестно')}",
     ]
 
-    # Навыки
     if user_data.get('skills'):
         message.append(f"🛠 Навыки: {user_data['skills']}")
+    if user_data.get('intern_skills'):
+        message.append(f"🔧 Доп. навыки: {user_data['intern_skills']}")
 
     return "\n".join(message)
 
 
-async def show_user_info(target: Message | CallbackQuery, state: FSMContext):
-    """Общая функция для отображения информации (для сообщений и callback)"""
+async def show_user_info(callback: CallbackQuery, state: FSMContext):
+    """Отображает информацию о пользователе"""
     try:
-        # Получаем user из правильного источника
-        user = target.from_user if isinstance(target, Message) else target.from_user
-
-        if not user.username:
-            await (target.answer if isinstance(target, Message) else target.answer)(
-                "❌ У вас не установлен username в Telegram",
-                show_alert=isinstance(target, CallbackQuery)
-            )
+        username = callback.from_user.username
+        if not username:
+            await callback.answer("❌ У вас не установлен username", show_alert=True)
             return
 
-        logger.debug(f"Запрос информации для пользователя: {user.username} (ID: {user.id})")
-
-        user_data = get_full_user_info(user.username)
+        user_data = get_full_user_info(username)
         if not user_data:
-            response = "ℹ️ Ваш профиль не найден в системе"
-            await (target.answer if isinstance(target, Message) else target.message.edit_text)(response)
+            await callback.answer("ℹ️ Ваш профиль не найден", show_alert=True)
             return
 
-        response_text = format_complete_user_info(user_data)
-
-        if isinstance(target, Message):
-            await target.answer(response_text, reply_markup=get_my_info_kb())
-        else:
-            await target.message.edit_text(response_text, reply_markup=get_my_info_kb())
-
+        await callback.message.edit_text(
+            text=format_complete_user_info(user_data),
+            reply_markup=get_my_info_kb()
+        )
         await state.set_state(Form.view_my_info)
 
     except Exception as e:
         logger.error(f"Ошибка при показе информации: {e}")
-        error_msg = "⚠️ Ошибка при загрузке данных"
-        await (target.answer if isinstance(target, Message) else target.answer)(error_msg, show_alert=True)
+        await callback.answer("⚠️ Ошибка при загрузке данных", show_alert=True)
 
 
 @router.callback_query(F.data == "show_my_info")
 async def handle_show_my_info(callback: CallbackQuery, state: FSMContext):
     """Обработчик кнопки 'Моя информация'"""
     await show_user_info(callback, state)
-    await callback.answer()
-
-
-@router.message(Command("my_info"))
-async def handle_my_info_command(message: Message, state: FSMContext):
-    """Обработчик команды /my_info"""
-    await show_user_info(message, state)
