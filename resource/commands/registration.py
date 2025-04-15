@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import Router, Bot
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
@@ -6,7 +6,9 @@ from .forms import Form
 from config import *
 from db.db_request.new_user import new_user
 from db.db_request.is_admins_key import is_admins_key
+from db.db_request.get_admins_id import get_admins_id
 from ..keyboards.admin_keyboard import admin_keyboard
+from ..keyboards.accept_new_user import accept_new_user_kb
 
 router = Router()
 
@@ -64,7 +66,7 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
         await message.answer('Укажите ваши скиллы:')
         await state.set_state(Form.registration_skills)
     else:
-        add_new_user(message.from_user.username)
+        add_new_user(message.from_user.id, message.from_user.username)
         await message.answer('Регистрация завершена (Ждите подтверждения - реализовать)',
                              reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
@@ -73,11 +75,17 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
 @router.message(Form.registration_skills)
 async def registration_get_skills(message: Message, state: FSMContext):
     user['skills'] = message.text
-    add_new_user(message.from_user.username)
     await message.answer('Регистрация завершена (Ждите подтверждения - реализовать)')
+    bot = Bot(token=TOKEN)
+    await bot.send_message(text=f'Пользователь @{message.from_user.username} {user['surname']} {user['name']} {user['middle_name']} хочет зарегистрироваться',
+                           chat_id=get_admins_id(user['admin']),
+                           reply_markup=accept_new_user_kb)
+    await bot.session.close()
+    print(0)
+    add_new_user(message.from_user.id, message.from_user.username) # делать только после регистрации
     await state.set_state(Form.main_intern)
 
 
-def add_new_user(username):
+def add_new_user(user_id, username):
     global user
-    new_user(username, user)
+    new_user(user_id, username, user)

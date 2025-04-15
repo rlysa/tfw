@@ -9,7 +9,8 @@ class Users(SqlAlchemyBase):
     ADMIN = 2
     INTERN = 3
 
-    username = sqlalchemy.Column(sqlalchemy.String, primary_key=True, unique=True)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, unique=True)
+    username = sqlalchemy.Column(sqlalchemy.String)
     role = sqlalchemy.Column(sqlalchemy.Integer)
     surname = sqlalchemy.Column(sqlalchemy.String)
     name = sqlalchemy.Column(sqlalchemy.String)

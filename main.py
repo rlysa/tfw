@@ -17,12 +17,14 @@ dp.include_router(admin_main_router)
 dp.include_router(look_interns_info_router)
 dp.include_router(look_groups_info_router)
 dp.include_router(create_task_router)
+# dp.include_router(accept_new_user_router)
 
 
 def run_db():
     global_init(DB_NAME)
-    if is_new_user('admin') == True:
-         new_user('admin', {'role': 2,
+    if is_new_user(123567890) == True:
+         new_user(123567890,
+                  'admin', {'role': 2,
                             'surname': 'Admin',
                             'name': 'Admin',
                             'middle_name': 'Admin',

@@ -4,26 +4,26 @@ from random import choices
 from config import DB_NAME
 
 
-def is_new_user(username):
+def is_new_user(user_id):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
-    usernames = cursor.execute('''SELECT username FROM Users''').fetchall()
-    if (username, ) not in usernames:
+    ids = cursor.execute('''SELECT id FROM Users''').fetchall()
+    if (user_id, ) not in ids:
         connection.close()
         return True
     else:
-        role = cursor.execute(f'''SELECT role FROM Users WHERE username="{username}"''').fetchone()
+        role = cursor.execute(f'''SELECT role FROM Users WHERE id="{user_id}"''').fetchone()
         connection.close()
         return role[0]
 
 
-def new_user(username, user):
+def new_user(user_id, username, user):
     role, surname, name, middle_name = user['role'], user['surname'], user['name'], user['middle_name']
 
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
-    cursor.execute('''INSERT INTO Users (username, role, surname, name, middle_name) VALUES (?, ?, ?, ?, ?)''',
-                   (username, role, surname, name, middle_name))
+    cursor.execute('''INSERT INTO Users (id, username, role, surname, name, middle_name) VALUES (?, ?, ?, ?, ?, ?)''',
+                   (user_id, username, role, surname, name, middle_name))
 
     if role == 3:
         admin = cursor.execute(f'''SELECT username FROM Admins WHERE key={user['admin']}''').fetchone()[0]

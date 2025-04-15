@@ -14,7 +14,7 @@ router = Router()
 
 @router.message(Command('start'))
 async def start(message: Message, state: FSMContext):
-    is_new = is_new_user(message.from_user.username)
+    is_new = is_new_user(message.from_user.id)
     if is_new == True:
         await message.answer('''Добро пожаловать!
 Данный бот предназначен для упрощения взаимодействия между руководителем и стажерами.
