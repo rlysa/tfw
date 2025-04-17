@@ -64,7 +64,7 @@ async def handle_back_to_menu(callback: CallbackQuery, state: FSMContext):
     """Обработчик кнопки 'Назад в меню'"""
     try:
         await callback.message.edit_text(
-            "📌 <b>Главное меню</b>\nВыберите действие:",
+            "📌 Главное меню\nВыберите действие:",
             reply_markup=get_action_selection_menu()
         )
         await state.set_state(Form.main_menu)

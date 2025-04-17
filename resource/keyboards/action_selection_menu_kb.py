@@ -7,7 +7,7 @@ def get_action_selection_menu() -> InlineKeyboardMarkup:
             [
                 InlineKeyboardButton(
                     text="📋 Мои задачи",
-                    callback_data="show_my_tasks"  # Должно совпадать с обработчиком
+                    callback_data="show_my_tasks"
                 )
             ],
             [
