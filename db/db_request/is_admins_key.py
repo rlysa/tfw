@@ -3,7 +3,6 @@ import sqlite3
 from config import DB_NAME
 
 
-
 def is_admins_key(key):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
