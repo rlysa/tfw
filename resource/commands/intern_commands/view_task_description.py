@@ -49,7 +49,7 @@ async def handle_view_task(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.callback_query(aiogram.F.data.startswith("change_status_"))
+@router.callback_query(F.data.startswith("change_status_"))
 async def handle_change_status(callback: CallbackQuery, state: FSMContext):
     """Обработчик изменения статуса задачи"""
     task_id = int(callback.data.split("_")[2])
@@ -61,7 +61,7 @@ async def handle_change_status(callback: CallbackQuery, state: FSMContext):
         await callback.answer("⚠️ Не удалось изменить статус")
 
 
-@router.callback_query(aiogram.F.data == "back_to_tasks_list")
+@router.callback_query(F.data == "back_to_tasks_list")
 async def handle_back_to_list(callback: CallbackQuery, state: FSMContext):
     """Обработчик возврата к списку задач"""
     username = callback.from_user.username
