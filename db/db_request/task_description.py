@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 from config import DB_NAME
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 
