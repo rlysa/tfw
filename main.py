@@ -23,6 +23,7 @@ dp.include_router(create_task_router)
 
 
 
+
 def run_db():
     global_init(DB_NAME)
     if is_new_user(123567890) == True:
