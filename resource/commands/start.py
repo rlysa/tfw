@@ -21,6 +21,7 @@ async def start(message: Message, state: FSMContext):
 Для дальнейшей работы пройдите регистрацию!''')
         await asyncio.sleep(3)
         await message.answer('Введите ключ, выданный администратором:')
+        await state.update_data(login=0)
         await state.set_state(Form.registration_psw)
     else:
         if is_new == 2:
