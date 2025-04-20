@@ -3,6 +3,7 @@ import sqlite3
 from config import DB_NAME
 
 
+
 def list_of_groups(admin):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
