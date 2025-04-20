@@ -1,5 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+
 def get_action_selection_menu() -> InlineKeyboardMarkup:
     """Создает клавиатуру главного меню"""
     return InlineKeyboardMarkup(

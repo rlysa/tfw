@@ -1,5 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+
 def get_group_composition_kb() -> InlineKeyboardMarkup:
     """Клавиатура для управления просмотром группы"""
     return InlineKeyboardMarkup(

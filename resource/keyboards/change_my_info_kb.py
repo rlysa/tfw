@@ -1,5 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+
 def get_edit_select_kb() -> InlineKeyboardMarkup:
     """Клавиатура выбора поля для редактирования"""
     return InlineKeyboardMarkup(

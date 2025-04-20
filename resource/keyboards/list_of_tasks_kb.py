@@ -1,7 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from db.db_request.list_tasks import list_tasks
 
-
 def list_of_tasks_kb(username: str) -> InlineKeyboardMarkup:
     """
     Создает клавиатуру со списком задач и кнопкой "Назад в меню"

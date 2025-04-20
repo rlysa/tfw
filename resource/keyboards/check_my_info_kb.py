@@ -1,5 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+
 def get_my_info_kb() -> InlineKeyboardMarkup:
     """Клавиатура для просмотра информации"""
     return InlineKeyboardMarkup(

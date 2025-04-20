@@ -1,5 +1,6 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
+
 buttons = [
     [KeyboardButton(text='Стажеры'), KeyboardButton(text='Группы')]
 ]
