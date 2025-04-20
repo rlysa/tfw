@@ -9,6 +9,7 @@ from resource.keyboards.group_composition_kb import get_group_composition_kb
 from ..forms import Form
 import logging
 
+
 router = Router(name="action_selection_menu_router")
 logger = logging.getLogger(__name__)
 

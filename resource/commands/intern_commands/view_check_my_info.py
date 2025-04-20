@@ -7,6 +7,7 @@ from resource.keyboards.check_my_info_kb import get_my_info_kb
 from resource.commands.forms import Form
 import logging
 
+
 router = Router(name="view_check_my_info_router")
 logger = logging.getLogger(__name__)
 

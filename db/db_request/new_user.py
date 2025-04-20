@@ -4,6 +4,7 @@ from random import choices
 from config import DB_NAME
 
 
+
 def is_new_user(username):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
