@@ -1,6 +1,5 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-
 def get_task_description_kb(task_id: int, is_done: bool) -> InlineKeyboardMarkup:
     """
     Создает клавиатуру для управления задачей
