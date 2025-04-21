@@ -1,4 +1,4 @@
-TOKEN = '7602332436:AAEZ0Cw5QB4zHREMtteqIzBfUWM3kd8sMIM'
+TOKEN = '****'
 ADMIN_FATHER_PSW = '****'
 ADMIN_PSW = '****'
 DB_NAME = 'db/db/thw_db.db'
