@@ -9,9 +9,9 @@ def list_of_interns_kb(admin):
     return keyboard
 
 
-def list_of_interns_select_kb(admin, selected):
+def list_of_interns_select_kb(list_interns, selected):
     buttons = []
-    for i in list_of_interns(admin):
+    for i in list_interns:
         if i[1] in selected:
             buttons.append([InlineKeyboardButton(text=f'\U00002705 {i[0]}', callback_data=i[1])])
         else:
