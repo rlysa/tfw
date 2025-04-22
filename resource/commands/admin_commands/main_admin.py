@@ -17,8 +17,8 @@ async def main_admin(message: Message, state: FSMContext):
         await message.answer('Введите название задачи:')
         await state.set_state(Form.create_task_name)
     elif message.text == 'Создать группу':
-        await message.answer('Находится в разработке:',
-                             reply_markup=admin_keyboard)
+        await message.answer('Введите название группы:')
+        await state.set_state(Form.create_group_name)
     elif message.text == 'Стажеры':
         await message.answer('Список стажеров:',
                              reply_markup=list_of_interns_kb(message.from_user.username))

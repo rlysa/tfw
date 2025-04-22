@@ -28,3 +28,6 @@ class Form(StatesGroup):
     create_task_description = State()
     create_task_deadline = State()
     create_task_report = State()
+
+    create_group_name = State()
+    create_group_interns = State()

@@ -23,6 +23,7 @@ dp.include_router(action_selection_menu_router)
 dp.include_router(view_check_my_info_router)
 dp.include_router(change_my_info_router)
 dp.include_router(create_task_router)
+dp.include_router(create_group_router)
 # dp.include_router(accept_new_user_router)
 
 
