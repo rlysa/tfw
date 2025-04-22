@@ -5,7 +5,7 @@ from config import DB_NAME
 
 
 def new_task(task, admin):
-    name, interns, description, deadline, report = task['name'], task['interns'], task['description'], task['deadline'], task['report']
+    name, interns, description, deadline, report = task['name'], ' '.join(task['selected']), task['description'], task['deadline'], task['report']
     deadline = datetime.strptime(deadline, "%d.%m.%Y").date()
 
     connection = sqlite3.connect(DB_NAME)

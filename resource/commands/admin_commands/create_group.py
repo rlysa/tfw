@@ -33,7 +33,8 @@ async def create_group_get_interns(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     selected_interns = data['selected']
     if callback.data == 'next':
-        await callback.message.answer(f'Группа "{data['name']}" создана\n\nСтажеры:\n@{'\n@'.join(selected_interns)}',
+        await callback.message.answer(f'Группа "{data['name']}" создана\n\nСтажеры:\n{
+        '\n'.join([i[0] + ' @' + i[1] for i in data['interns'] if i[1] in selected_interns])}',
                                       reply_markup=admin_keyboard)
         create_group(data['name'], callback.from_user.username, selected_interns)
         await state.set_state(Form.main_admin)
