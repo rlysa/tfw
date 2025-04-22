@@ -1,7 +1,6 @@
 from aiogram import Router, Bot
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 
 from .forms import Form
 from config import *
@@ -11,15 +10,8 @@ from db.db_request.get_admins_id import get_admins_id
 from ..keyboards.admin_keyboard import admin_keyboard
 from ..keyboards.accept_new_user import accept_new_user_kb
 
-router = Router()
 
-class User(StatesGroup):
-    role = State()
-    surname = State()
-    name = State()
-    middle_name = State()
-    admin = State()
-    login = State()
+router = Router()
 
 
 @router.message(Form.registration_psw)
