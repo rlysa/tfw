@@ -2,6 +2,8 @@ from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
+from datetime import datetime
+
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb
@@ -14,6 +16,9 @@ router = Router()
 
 @router.message(Form.create_task_name)
 async def create_task_get_name(message: Message, state: FSMContext):
+    if len(message.text) > 30:
+        await message.answer('Макс. количество символов: 30\nВведите название задачи:')
+        return
     await state.update_data(name=message.text)
     interns = func_list_of_interns(message.from_user.username)
     await state.update_data(interns=interns)
@@ -24,7 +29,7 @@ async def create_task_get_name(message: Message, state: FSMContext):
 
 
 @router.message(Form.create_task_interns)
-async def create_tsak_get_interns(message: Message, state: FSMContext):
+async def create_task_get_interns(message: Message, state: FSMContext):
     await message.answer('Некорректный запрос')
 
 
@@ -47,6 +52,9 @@ async def create_task_get_interns(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.create_task_description)
 async def create_task_get_description(message: Message, state: FSMContext):
+    if len(message.text) > 4000:
+        await message.answer('Макс. количество символов: 4000\nВведите описание задачи:')
+        return
     await state.update_data(description=message.text)
     await message.answer('Укажите сроки выполнения задачи в формате дд.мм.гггг:')
     await state.set_state(Form.create_task_deadline)
@@ -54,13 +62,22 @@ async def create_task_get_description(message: Message, state: FSMContext):
 
 @router.message(Form.create_task_deadline)
 async def create_task_get_deadline(message: Message, state: FSMContext):
-    await state.update_data(deadline=message.text)  # сделать проверку на ввод: правильный формат, дата не раньше сегодняшней
-    await message.answer('Укажите формат отчета о выполнении задач (мб тоже список)')
-    await state.set_state(Form.create_task_report)
+    try:
+        if (datetime.strptime(message.text, "%d.%m.%Y").date() - datetime.today().date()).days < 1:
+            await message.answer('Срок выполнения может быть назначен не ранее чем на завтра. Укажите сроки выполнения задачи в формате дд.мм.гггг:')
+        else:
+            await state.update_data(deadline=datetime.strptime(message.text, "%d.%m.%Y").date())
+            await message.answer('Укажите формат отчета о выполнении задач (мб тоже список)')
+            await state.set_state(Form.create_task_report)
+    except Exception as e:
+        await message.answer('Дата указана неверно. Укажите сроки выполнения задачи в формате дд.мм.гггг:')
 
 
 @router.message(Form.create_task_report)
 async def create_task_get_report(message: Message, state: FSMContext):
+    if len(message.text) > 30:
+        await message.answer('Макс. количество символов: 30\nУкажите формат отчета о выполнении задач')
+        return
     await state.update_data(report=message.text)
     data = await state.get_data()
     create_task(data, message.from_user.username)

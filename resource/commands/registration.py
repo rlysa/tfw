@@ -16,6 +16,9 @@ router = Router()
 
 @router.message(Form.registration_psw)
 async def registration_get_psw(message: Message, state: FSMContext):
+    if len(message.text) > 30:
+        await message.answer('Макс. количество символов: 30\nВведите ключ:')
+        return
     data = await state.get_data()
     login = data['login'] + 1
     await state.update_data(login=login)
@@ -40,6 +43,9 @@ async def registration_get_psw(message: Message, state: FSMContext):
 
 @router.message(Form.registration_surname)
 async def registration_get_surname(message: Message, state: FSMContext):
+    if len(message.text) > 30:
+        await message.answer('Макс. количество символов: 30\nВведите фамилию:')
+        return
     await state.update_data(surname=message.text)
     await message.answer('Введите имя:')
     await state.set_state(Form.registration_name)
@@ -47,6 +53,9 @@ async def registration_get_surname(message: Message, state: FSMContext):
 
 @router.message(Form.registration_name)
 async def registration_get_name(message: Message, state: FSMContext):
+    if len(message.text) > 30:
+        await message.answer('Макс. количество символов: 30\nВведите имя:')
+        return
     await state.update_data(name=message.text)
     await message.answer('Введите отчество:')
     await state.set_state(Form.registration_middle_name)
@@ -54,6 +63,9 @@ async def registration_get_name(message: Message, state: FSMContext):
 
 @router.message(Form.registration_middle_name)
 async def registration_get_middle_name(message: Message, state: FSMContext):
+    if len(message.text) > 30:
+        await message.answer('Макс. количество символов: 30\nВведите отчество:')
+        return
     await state.update_data(middle_name=message.text)
     data = await state.get_data()
     if data['role'] == 3:
@@ -68,6 +80,9 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
 
 @router.message(Form.registration_skills)
 async def registration_get_skills(message: Message, state: FSMContext):
+    if len(message.text) > 300:
+        await message.answer('Макс. количество символов: 300\nУкажите ваши скиллы:')
+        return
     await state.update_data(skills=message.text)
     await message.answer('Регистрация завершена (Ждите подтверждения - реализовать)')
     bot = Bot(token=TOKEN)

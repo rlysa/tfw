@@ -14,6 +14,9 @@ router = Router()
 
 @router.message(Form.create_group_name)
 async def create_group_get_name(message: Message, state: FSMContext):
+    if len(message.text) > 30:
+        await message.answer('Макс. количество символов: 30\nВведите название группы:')
+        return
     await state.update_data(name=message.text)
     interns = func_list_of_interns(message.from_user.username)
     await state.update_data(interns=interns)
