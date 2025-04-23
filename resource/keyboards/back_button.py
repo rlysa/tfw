@@ -1,6 +1,6 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
-button = [[KeyboardButton(text='Назад')]]
+button = [[KeyboardButton(text='Меню команд')]]
 back_kb = ReplyKeyboardMarkup(keyboard=button,
                               resize_keyboard=True,
                               one_time_keyboard=True)

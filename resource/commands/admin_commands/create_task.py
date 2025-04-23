@@ -7,6 +7,7 @@ from datetime import datetime
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb
+from ...keyboards.back_button import back_kb
 from db.db_request.create_task import new_task
 from db.db_request.list_interns import list_of_interns
 
@@ -17,7 +18,13 @@ router = Router()
 @router.message(Form.create_task_name)
 async def create_task_get_name(message: Message, state: FSMContext):
     if len(message.text) > 30:
-        await message.answer('Макс. количество символов: 30\nВведите название задачи:')
+        await message.answer('Макс. количество символов: 30\nВведите название задачи:',
+                             reply_markup=back_kb)
+        return
+    if message.text == 'Меню команд':
+        await message.answer('Задача не создана',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
         return
     await state.update_data(name=message.text)
     interns = func_list_of_interns(message.from_user.username)
@@ -30,7 +37,8 @@ async def create_task_get_name(message: Message, state: FSMContext):
 
 @router.message(Form.create_task_interns)
 async def create_task_get_interns(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    await message.answer('Некорректный запрос',
+                         reply_markup=back_kb)
 
 
 @router.callback_query(Form.create_task_interns)
@@ -38,7 +46,8 @@ async def create_task_get_interns(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     selected_interns = data['selected']
     if callback.data == 'next':
-        await callback.message.answer('Введите описание задачи:')
+        await callback.message.answer('Введите описание задачи:',
+                                      reply_markup=back_kb)
         await state.set_state(Form.create_task_description)
     else:
         if callback.data in selected_interns:
@@ -53,30 +62,51 @@ async def create_task_get_interns(callback: CallbackQuery, state: FSMContext):
 @router.message(Form.create_task_description)
 async def create_task_get_description(message: Message, state: FSMContext):
     if len(message.text) > 4000:
-        await message.answer('Макс. количество символов: 4000\nВведите описание задачи:')
+        await message.answer('Макс. количество символов: 4000\nВведите описание задачи:',
+                             reply_markup=back_kb)
+        return
+    if message.text == 'Меню команд':
+        await message.answer('Задача не создана',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
         return
     await state.update_data(description=message.text)
-    await message.answer('Укажите сроки выполнения задачи в формате дд.мм.гггг:')
+    await message.answer('Укажите сроки выполнения задачи в формате дд.мм.гггг:',
+                         reply_markup=back_kb)
     await state.set_state(Form.create_task_deadline)
 
 
 @router.message(Form.create_task_deadline)
 async def create_task_get_deadline(message: Message, state: FSMContext):
+    if message.text == 'Меню команд':
+        await message.answer('Задача не создана',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+        return
     try:
         if (datetime.strptime(message.text, "%d.%m.%Y").date() - datetime.today().date()).days < 1:
-            await message.answer('Срок выполнения может быть назначен не ранее чем на завтра. Укажите сроки выполнения задачи в формате дд.мм.гггг:')
+            await message.answer('Срок выполнения может быть назначен не ранее чем на завтра. Укажите сроки выполнения задачи в формате дд.мм.гггг:',
+                                 reply_markup=back_kb)
         else:
             await state.update_data(deadline=datetime.strptime(message.text, "%d.%m.%Y").date())
-            await message.answer('Укажите формат отчета о выполнении задач (мб тоже список)')
+            await message.answer('Укажите формат отчета о выполнении задач (мб тоже список)',
+                                 reply_markup=back_kb)
             await state.set_state(Form.create_task_report)
     except Exception as e:
-        await message.answer('Дата указана неверно. Укажите сроки выполнения задачи в формате дд.мм.гггг:')
+        await message.answer('Дата указана неверно. Укажите сроки выполнения задачи в формате дд.мм.гггг:',
+                             reply_markup=back_kb)
 
 
 @router.message(Form.create_task_report)
 async def create_task_get_report(message: Message, state: FSMContext):
     if len(message.text) > 30:
-        await message.answer('Макс. количество символов: 30\nУкажите формат отчета о выполнении задач')
+        await message.answer('Макс. количество символов: 30\nУкажите формат отчета о выполнении задач',
+                             reply_markup=back_kb)
+        return
+    if message.text == 'Меню команд':
+        await message.answer('Задача не создана',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
         return
     await state.update_data(report=message.text)
     data = await state.get_data()

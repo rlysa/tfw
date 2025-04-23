@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb
+from ...keyboards.back_button import back_kb
 from db.db_request.create_group import new_group
 from db.db_request.list_interns import list_of_interns
 
@@ -15,7 +16,13 @@ router = Router()
 @router.message(Form.create_group_name)
 async def create_group_get_name(message: Message, state: FSMContext):
     if len(message.text) > 30:
-        await message.answer('Макс. количество символов: 30\nВведите название группы:')
+        await message.answer('Макс. количество символов: 30\nВведите название группы:',
+                             reply_markup=back_kb)
+        return
+    if message.text == 'Меню команд':
+        await message.answer('Группа не создана',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
         return
     await state.update_data(name=message.text)
     interns = func_list_of_interns(message.from_user.username)
@@ -28,7 +35,8 @@ async def create_group_get_name(message: Message, state: FSMContext):
 
 @router.message(Form.create_group_interns)
 async def create_group_get_interns(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    await message.answer('Некорректный запрос',
+                         reply_markup=back_kb)
 
 
 @router.callback_query(Form.create_group_interns)
