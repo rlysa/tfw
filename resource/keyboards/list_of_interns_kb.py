@@ -17,5 +17,6 @@ def list_of_interns_select_kb(list_interns, selected):
         else:
             buttons.append([InlineKeyboardButton(text=i[0], callback_data=i[1])])
     buttons.append([InlineKeyboardButton(text='Далее', callback_data='next')])
+    buttons.append([InlineKeyboardButton(text='Меню команд', callback_data='back')])
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     return keyboard

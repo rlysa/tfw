@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import Router, Bot
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
@@ -8,6 +8,7 @@ from ...keyboards.list_of_interns_kb import list_of_interns_select_kb
 from ...keyboards.back_button import back_kb
 from db.db_request.create_group import new_group
 from db.db_request.list_interns import list_of_interns
+from config import *
 
 
 router = Router()
@@ -48,6 +49,13 @@ async def create_group_get_interns(callback: CallbackQuery, state: FSMContext):
         '\n'.join([i[0] + ' @' + i[1] for i in data['interns'] if i[1] in selected_interns])}',
                                       reply_markup=admin_keyboard)
         create_group(data['name'], callback.from_user.username, selected_interns)
+        await state.set_state(Form.main_admin)
+    elif callback.data == 'back':
+        bot = Bot(token=TOKEN)
+        await bot.send_message(callback.from_user.id,
+                               text=f'Группа не создана',
+                               reply_markup=admin_keyboard)
+        await bot.session.close()
         await state.set_state(Form.main_admin)
     else:
         if callback.data in selected_interns:

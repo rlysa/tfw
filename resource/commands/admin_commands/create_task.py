@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import Router, Bot
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
@@ -10,6 +10,7 @@ from ...keyboards.list_of_interns_kb import list_of_interns_select_kb
 from ...keyboards.back_button import back_kb
 from db.db_request.create_task import new_task
 from db.db_request.list_interns import list_of_interns
+from config import *
 
 
 router = Router()
@@ -49,6 +50,13 @@ async def create_task_get_interns(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer('Введите описание задачи:',
                                       reply_markup=back_kb)
         await state.set_state(Form.create_task_description)
+    elif callback.data == 'back':
+        bot = Bot(token=TOKEN)
+        await bot.send_message(callback.from_user.id,
+                               text=f'Задача не создана',
+                               reply_markup=admin_keyboard)
+        await bot.session.close()
+        await state.set_state(Form.main_admin)
     else:
         if callback.data in selected_interns:
             selected_interns.pop(selected_interns.index(callback.data))
