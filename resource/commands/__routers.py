@@ -12,3 +12,4 @@ from .intern_commands.change_my_info import router as change_my_info_router
 from .admin_commands.create_task import router as create_task_router
 from .admin_commands.create_group import router as create_group_router
 # from .admin_commands.accept_new_user import router as accept_new_user_router
+from .intern_commands.task_completion_report import router as task_completion_report_router
