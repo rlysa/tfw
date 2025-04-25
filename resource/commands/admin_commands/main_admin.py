@@ -7,6 +7,8 @@ from ...keyboards.admin_keyboard import admin_keyboard, tasks_keyboard, group_ke
 from ...keyboards.list_of_interns_kb import list_of_interns_kb
 from ...keyboards.list_of_groups_kb import list_of_groups_kb
 from ...keyboards.back_button import back_kb
+from ...keyboards.change_profile_kb import change_profile_keyboard
+from db.db_request.admins_profile import profile
 
 
 router = Router()
@@ -27,8 +29,10 @@ async def main_admin(message: Message, state: FSMContext):
                              reply_markup=list_of_interns_kb(message.from_user.username))
         await state.set_state(Form.look_interns_info)
     elif message.text == 'Профиль':
-        await message.answer('В разработке',
-                             reply_markup=admin_keyboard)
+        pr = profile(message.from_user.username)
+        await message.answer(f'ФИО: {pr[1]}\nКлюч: {pr[0]}',  # поменять, в разделе профиль добавить кнопку "получить ключ", которая обновляет ключ для регистрации стажера
+                             reply_markup=change_profile_keyboard)
+        await state.set_state(Form.look_profile)
     else:
         await message.answer('Некорректный запрос',
                              reply_markup=admin_keyboard)

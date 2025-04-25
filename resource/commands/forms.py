@@ -26,6 +26,7 @@ class Form(StatesGroup):
     tasks_command = State()
     look_tasks = State()
     look_profile = State()
+    change_profile = State()
 
     create_task_name = State()
     create_task_interns = State()
