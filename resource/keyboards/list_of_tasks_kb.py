@@ -1,5 +1,7 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from db.db_request.list_tasks import list_tasks
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
+
+from db.db_request.list_tasks import list_tasks, list_of_tasks
+
 
 def list_of_tasks_kb(username: str) -> InlineKeyboardMarkup:
     """
@@ -37,3 +39,10 @@ def list_of_tasks_kb(username: str) -> InlineKeyboardMarkup:
     ])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def list_of_tasks_admin_kb(admin):
+    buttons = [[InlineKeyboardButton(text=i[1], callback_data=f'{i[0]}')] for i in list_of_tasks(admin)]
+    buttons.append([InlineKeyboardButton(text='Меню команд', callback_data='back')])
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    return keyboard

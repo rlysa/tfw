@@ -6,6 +6,7 @@ from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard, tasks_keyboard, group_keyboard
 from ...keyboards.list_of_interns_kb import list_of_interns_kb
 from ...keyboards.list_of_groups_kb import list_of_groups_kb
+from ...keyboards.list_of_tasks_kb import list_of_tasks_admin_kb
 from ...keyboards.back_button import back_kb
 from ...keyboards.change_profile_kb import change_profile_keyboard
 from db.db_request.admins_profile import profile
@@ -45,8 +46,9 @@ async def tasks_commands(message: Message, state: FSMContext):
                              reply_markup=back_kb)
         await state.set_state(Form.create_task_name)
     elif message.text == 'Посмотреть задачи':
-        await message.answer('В разработке',
-                             reply_markup=tasks_keyboard)
+        await message.answer('Список задач:',
+                             reply_markup=list_of_tasks_admin_kb(message.from_user.username))
+        await state.set_state(Form.look_tasks)
     elif message.text == 'Изменить задачу':
         await message.answer('В разработке',
                              reply_markup=tasks_keyboard)

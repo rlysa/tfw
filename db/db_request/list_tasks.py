@@ -33,3 +33,17 @@ def list_tasks(intern_username: str) -> List[Tuple[int, str, str, str, str]]:
     except Exception as e:
         logger.error(f"Unexpected error in list_tasks: {e}")
         return []
+
+
+def list_of_tasks(admin):
+    connection = sqlite3.connect(DB_NAME)
+    cursor = connection.cursor()
+    tasks_names = cursor.execute(f'''SELECT id, name FROM Tasks WHERE admin="{admin}"''').fetchall()
+    return tasks_names
+
+
+def tasks_info_admin(id):
+    connection = sqlite3.connect(DB_NAME)
+    cursor = connection.cursor()
+    tasks = cursor.execute(f'SELECT * FROM Tasks WHERE id="{id}"').fetchall()
+    return tasks[0]

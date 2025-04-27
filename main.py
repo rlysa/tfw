@@ -25,6 +25,7 @@ dp.include_router(change_my_info_router)
 dp.include_router(create_task_router)
 dp.include_router(create_group_router)
 dp.include_router(change_profile_router)
+dp.include_router(look_tasks_router)
 # dp.include_router(accept_new_user_router)
 
 
