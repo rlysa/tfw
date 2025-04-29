@@ -14,3 +14,4 @@ from .admin_commands.create_group import router as create_group_router
 # from .admin_commands.accept_new_user import router as accept_new_user_router
 from .admin_commands.change_profile import router as change_profile_router
 from .admin_commands.look_tasks import router as look_tasks_router
+from .admin_commands.change_task import router as change_task_router
