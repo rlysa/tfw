@@ -43,39 +43,14 @@ async def change_delete_task(message: Message, state: FSMContext):
 
 @router.callback_query(Form.change_task)
 async def change_task(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    task = data['task']
     if callback.data == 'back':
         await callback.message.delete_reply_markup()
         await callback.message.answer(text=f'Выберите команду:',
                                       reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
-    elif callback.data == 'name':
-        await callback.message.edit_reply_markup(
-            reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить название', callback_data='name')]]))
-        await callback.message.answer('Введите новое название:',
-                                      reply_markup=back_kb)
-        await state.set_state(Form.change_task_name)
-    elif callback.data == 'deadline':
-        await callback.message.edit_reply_markup(
-            reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить дедлайн', callback_data='name')]]))
-        await callback.message.answer('Введите новый срок выполнения задачи в формате дд.мм.гггг:',
-                                      reply_markup=back_kb)
-        await state.set_state(Form.create_task_deadline)
-    elif callback.data == 'description':
-        await callback.message.edit_reply_markup(
-            reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить описание', callback_data='name')]]))
-        await callback.message.answer('Введите новое описание:',
-                                      reply_markup=back_kb)
-        await state.set_state(Form.change_task_description)
-    elif callback.data == 'report':
-        await callback.message.edit_reply_markup(
-            reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить формат отчета', callback_data='name')]]))
-        await callback.message.answer('Введите новый формат отчета:',
-                                      reply_markup=back_kb)
-        await state.set_state(Form.change_task_report)
+        return
     elif callback.data == 'interns':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
@@ -84,6 +59,39 @@ async def change_task(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer('Выберите стажеров из списка. Сделав выбор, нажмите "Далее":',
                                       reply_markup=list_of_interns_select_kb(interns, []))
         await state.set_state(Form.change_task_interns)
+        await state.update_data(task=task)
+        return
+
+    await state.set_state(Form.change_task_new)
+    await state.update_data(task=task)
+    if callback.data == 'name':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить название', callback_data='name')]]))
+        await callback.message.answer('Введите новое название:',
+                                      reply_markup=back_kb)
+        await state.update_data(type='name')
+    elif callback.data == 'deadline':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить дедлайн', callback_data='name')]]))
+        await callback.message.answer('Введите новый срок выполнения задачи в формате дд.мм.гггг:',
+                                      reply_markup=back_kb)
+        await state.update_data(type='deadline')
+    elif callback.data == 'description':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить описание', callback_data='name')]]))
+        await callback.message.answer('Введите новое описание:',
+                                      reply_markup=back_kb)
+        await state.update_data(type='description')
+    elif callback.data == 'report':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить формат отчета', callback_data='name')]]))
+        await callback.message.answer('Введите новый формат отчета:',
+                                      reply_markup=back_kb)
+        await state.update_data(type='report')
 
 
 @router.message(Form.change_task)
@@ -95,36 +103,21 @@ def func_list_of_interns(admin):
     return list_of_interns(admin)
 
 
-@router.message(Form.change_task_name)
-async def change_task_name(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
+@router.message(Form.change_task_new)
+async def change_task_new(message: Message, state: FSMContext):
+    if message.text == 'Меню команд':
+        await message.answer('Задача не была изменена:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Ща доработаю, чтоб задачка менялась',
                          reply_markup=admin_keyboard)
-    await state.set_state(Form.main_admin)
-
-
-@router.message(Form.change_task_deadline)
-async def change_task_deadline(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
-                         reply_markup=admin_keyboard)
-    await state.set_state(Form.main_admin)
-
-
-@router.message(Form.change_task_description)
-async def change_task_description(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
-                         reply_markup=admin_keyboard)
-    await state.set_state(Form.main_admin)
-
-
-@router.message(Form.change_task_report)
-async def change_task_report(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
-                         reply_markup=admin_keyboard)
-    await state.set_state(Form.main_admin)
+        await state.set_state(Form.main_admin)
 
 
 @router.callback_query(Form.change_task_interns)
 async def change_task_interns(callback: CallbackQuery, state: FSMContext):
+
     await callback.message.answer('Некорректный запрос',
                                   reply_markup=admin_keyboard)
     await state.set_state(Form.main_admin)
@@ -132,6 +125,6 @@ async def change_task_interns(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.change_task_interns)
 async def change_task_interns(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
+    await message.answer('Ща доработаю, чтоб задачка менялась',
                          reply_markup=admin_keyboard)
     await state.set_state(Form.main_admin)

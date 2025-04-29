@@ -31,12 +31,8 @@ class Form(StatesGroup):
 
     change_delete_task = State()
     change_task = State()
-    change_task_name = State()
+    change_task_new = State()
     change_task_interns = State()
-    change_task_deadline = State()
-    change_task_description = State()
-    change_task_report = State()
-
 
     create_task_name = State()
     create_task_interns = State()
