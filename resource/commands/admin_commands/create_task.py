@@ -69,8 +69,8 @@ async def create_task_get_interns(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.create_task_description)
 async def create_task_get_description(message: Message, state: FSMContext):
-    if len(message.text) > 4000:
-        await message.answer('Макс. количество символов: 4000\nВведите описание задачи:',
+    if len(message.text) > 3000:
+        await message.answer('Макс. количество символов: 3000\nВведите описание задачи:',
                              reply_markup=back_kb)
         return
     if message.text == 'Меню команд':
