@@ -13,6 +13,7 @@ from ...keyboards.back_button import back_kb
 from ...keyboards.change_task_kb import change_task_ikb, report_format_ikb
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
 from db.db_request.change_task import change_tasks_info
+from db.db_request.delete_task import delete_task
 
 
 router = Router()
@@ -28,6 +29,7 @@ async def change_delete_task(callback: CallbackQuery, state: FSMContext):
                                       reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
     elif callback.data == 'delete':
+        func_delete_task(task)
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[[InlineKeyboardButton(text='Удалить', callback_data='delete')]]))
@@ -43,6 +45,10 @@ async def change_delete_task(callback: CallbackQuery, state: FSMContext):
 @router.message(Form.change_delete_task)
 async def change_delete_task(message: Message, state: FSMContext):
     await message.answer('Некорректный запрос')
+
+
+def func_delete_task(tasks_id):
+    delete_task(tasks_id)
 
 
 @router.callback_query(Form.change_task)
