@@ -9,8 +9,8 @@ from db.db_request.list_interns import list_of_interns
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.back_button import back_kb
-from ...keyboards.change_task_kb import change_task_ikb
-from ...keyboards.list_of_interns_kb import list_of_interns_select_kb
+from ...keyboards.change_task_kb import change_task_ikb, report_format_ikb
+from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
 from db.db_request.change_task import change_tasks_info
 
 
@@ -59,9 +59,20 @@ async def change_task(callback: CallbackQuery, state: FSMContext):
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[[InlineKeyboardButton(text='Изменить список стажеров', callback_data='name')]]))
         interns = func_list_of_interns(callback.from_user.username)
-        await callback.message.answer('Выберите стажеров из списка. Сделав выбор, нажмите "Далее":',
+        await state.update_data(interns=interns)
+        await callback.message.answer('Выберите стажеров из списка. Сделав выбор, нажмите "Далее"',
                                       reply_markup=list_of_interns_select_kb(interns, []))
+        await state.update_data(selected=[])
         await state.set_state(Form.change_task_interns)
+        await state.update_data(task=task)
+        return
+    elif callback.data == 'report':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить формат отчета', callback_data='name')]]))
+        await callback.message.answer('Укажите новый формат отчета:',
+                                      reply_markup=report_format_ikb)
+        await state.set_state(Form.change_task_report)
         await state.update_data(task=task)
         return
 
@@ -88,13 +99,6 @@ async def change_task(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer('Введите новое описание:',
                                       reply_markup=back_kb)
         await state.update_data(field='description')
-    elif callback.data == 'report':
-        await callback.message.edit_reply_markup(
-            reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить формат отчета', callback_data='name')]]))
-        await callback.message.answer('Введите новый формат отчета:',
-                                      reply_markup=back_kb)
-        await state.update_data(field='report')
 
 
 @router.message(Form.change_task)
@@ -138,30 +142,80 @@ async def change_task_new(message: Message, state: FSMContext):
         await message.answer('Макс. количество символов: 3000\nВведите описание задачи:',
                              reply_markup=back_kb)
         return
-    elif field == 'report' and len(text) > 30:
-        await message.answer('Макс. количество символов: 30\nВведите формат отчета о выполнении задачи:',
-                             reply_markup=back_kb)
-        return
 
     if func_change_task(task, field, text):
-        await message.answer('Задача изменена (вывести измененную задачу',
+        await message.answer('Задача изменена (вывести измененную задачу)',
                      reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
 
 
+@router.callback_query(Form.change_task_report)
+async def change_task_report(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'no_report':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Без отчета', callback_data='no_report')]]
+            )
+        )
+    elif callback.data == 'message':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Сообщение', callback_data='message')]]
+            )
+        )
+    elif callback.data == 'file':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Файл', callback_data='file')]]
+            )
+        )
+
+    data = await state.get_data()
+    task = data['task']
+
+    if func_change_task(task, 'report', callback.data):
+        await callback.message.answer('Задача изменена (вывести измененную задачу)',
+                                      reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+
+
+@router.message(Form.change_task_report)
+async def change_task_report(message: Message, state: FSMContext):
+    await message.answer('Некорректный запрос',
+                         reply_markup=back_kb)
+
+
 @router.callback_query(Form.change_task_interns)
 async def change_task_interns(callback: CallbackQuery, state: FSMContext):
-
-    await callback.message.answer('Некорректный запрос',
-                                  reply_markup=admin_keyboard)
-    await state.set_state(Form.main_admin)
+    data = await state.get_data()
+    selected_interns = data['selected']
+    task = data['task']
+    if callback.data == 'next':
+        await callback.message.edit_reply_markup(
+            reply_markup=list_of_interns_selected_kb(data['interns'], selected_interns)
+        )
+        if func_change_task(task, 'interns', ' '.join(selected_interns)):
+            await callback.message.answer('Задача изменена (вывести измененную задачу)',
+                                          reply_markup=admin_keyboard)
+            await state.set_state(Form.main_admin)
+    elif callback.data == 'back':
+        await callback.message.answer(text=f'Задача не была изменена',
+                                      reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        if callback.data in selected_interns:
+            selected_interns.pop(selected_interns.index(callback.data))
+        else:
+            selected_interns.append(callback.data)
+        await state.update_data(selected=selected_interns)
+        await callback.message.edit_reply_markup(
+            reply_markup=list_of_interns_select_kb(data['interns'], selected_interns))
 
 
 @router.message(Form.change_task_interns)
 async def change_task_interns(message: Message, state: FSMContext):
-    await message.answer('Ща доработаю, чтоб задачка менялась',
-                         reply_markup=admin_keyboard)
-    await state.set_state(Form.main_admin)
+    await message.answer('Некорректный запрос',
+                         reply_markup=back_kb)
 
 
 def func_change_task(tasks_id, field, value):
