@@ -6,6 +6,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from datetime import datetime
 
 from db.db_request.list_interns import list_of_interns
+from db.db_request.list_tasks import tasks_info_admin
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.back_button import back_kb
@@ -144,8 +145,14 @@ async def change_task_new(message: Message, state: FSMContext):
         return
 
     if func_change_task(task, field, text):
-        await message.answer('Задача изменена (вывести измененную задачу)',
-                     reply_markup=admin_keyboard)
+        info = tasks_info_admin(task)
+        interns = '\n'.join(
+            [' - @'.join(i) for i in list_of_interns(message.from_user.username) if i[1] in info[2].split()])
+        await message.answer('Задача изменена')
+        await message.answer(
+            text=f'Название: {info[1]}\n\nСтажеры:\n{interns}\nДедлайн: {'.'.join(info[5].split('-')[::-1])}\nОписание: {
+            info[4]}\nФормат отчета: {info[6]}\nСтатус: {"не выполнена" if info[-1] != False else "выполнена"}',
+            reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
 
 
@@ -174,8 +181,14 @@ async def change_task_report(callback: CallbackQuery, state: FSMContext):
     task = data['task']
 
     if func_change_task(task, 'report', callback.data):
-        await callback.message.answer('Задача изменена (вывести измененную задачу)',
-                                      reply_markup=admin_keyboard)
+        info = tasks_info_admin(task)
+        interns = '\n'.join(
+            [' - @'.join(i) for i in list_of_interns(callback.from_user.username) if i[1] in info[2].split()])
+        await callback.message.answer('Задача изменена')
+        await callback.message.answer(
+            text=f'Название: {info[1]}\n\nСтажеры:\n{interns}\nДедлайн: {'.'.join(info[5].split('-')[::-1])}\nОписание: {
+            info[4]}\nФормат отчета: {info[6]}\nСтатус: {"не выполнена" if info[-1] != False else "выполнена"}',
+            reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
 
 
@@ -195,8 +208,14 @@ async def change_task_interns(callback: CallbackQuery, state: FSMContext):
             reply_markup=list_of_interns_selected_kb(data['interns'], selected_interns)
         )
         if func_change_task(task, 'interns', ' '.join(selected_interns)):
-            await callback.message.answer('Задача изменена (вывести измененную задачу)',
-                                          reply_markup=admin_keyboard)
+            info = tasks_info_admin(task)
+            interns = '\n'.join(
+                [' - @'.join(i) for i in list_of_interns(callback.from_user.username) if i[1] in info[2].split()])
+            await callback.message.answer('Задача изменена')
+            await callback.message.answer(
+                text=f'Название: {info[1]}\n\nСтажеры:\n{interns}\nДедлайн: {'.'.join(info[5].split('-')[::-1])}\nОписание: {
+                info[4]}\nФормат отчета: {info[6]}\nСтатус: {"не выполнена" if info[-1] != False else "выполнена"}',
+                reply_markup=admin_keyboard)
             await state.set_state(Form.main_admin)
     elif callback.data == 'back':
         await callback.message.answer(text=f'Задача не была изменена',

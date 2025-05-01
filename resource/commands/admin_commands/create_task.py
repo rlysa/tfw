@@ -5,6 +5,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from datetime import datetime
 
+from db.db_request.list_tasks import tasks_info_admin
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
@@ -140,7 +141,15 @@ async def create_task_get_report(callback: CallbackQuery, state: FSMContext):
     await state.update_data(report=callback.data)
     data = await state.get_data()
     create_task(data, callback.from_user.username)
-    await callback.message.answer('Задача создана', reply_markup=admin_keyboard)
+    info = [data['name'], data['description'], data['deadline'], data['report']]
+    interns = '\n'.join(
+        [' - @'.join(i) for i in list_of_interns(callback.from_user.username) if i[1] in data['selected']])
+    await callback.message.answer('Задача изменена')
+    await callback.message.answer(
+        text=f'Название: {info[0]}\n\nСтажеры:\n{interns}\nДедлайн: {'.'.join(f"{info[2]}".split('-')[::-1])}\nОписание: {
+        info[1]}\nФормат отчета: {info[3]}\nСтатус: не выполнена',
+        reply_markup=admin_keyboard)
+    await state.set_state(Form.main_admin)
     await state.set_state(Form.main_admin)
 
 
