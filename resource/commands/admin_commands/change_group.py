@@ -1,5 +1,3 @@
-from pstats import func_get_function_name
-
 from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
