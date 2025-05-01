@@ -1,13 +1,15 @@
 from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from datetime import datetime
 
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
-from ...keyboards.list_of_interns_kb import list_of_interns_select_kb
+from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
 from ...keyboards.back_button import back_kb
+from ...keyboards.change_task_kb import report_format_ikb
 from db.db_request.create_task import new_task
 from db.db_request.list_interns import list_of_interns
 
@@ -46,6 +48,9 @@ async def create_task_get_interns(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     selected_interns = data['selected']
     if callback.data == 'next':
+        await callback.message.edit_reply_markup(
+            reply_markup=list_of_interns_selected_kb(data['interns'], selected_interns)
+        )
         await callback.message.answer('Введите описание задачи:',
                                       reply_markup=back_kb)
         await state.set_state(Form.create_task_description)
@@ -93,30 +98,56 @@ async def create_task_get_deadline(message: Message, state: FSMContext):
                                  reply_markup=back_kb)
         else:
             await state.update_data(deadline=datetime.strptime(message.text, "%d.%m.%Y").date())
-            await message.answer('Укажите формат отчета о выполнении задач (мб тоже список)',
-                                 reply_markup=back_kb)
+            await message.answer('Укажите формат отчета о выполнении задач',
+                                 reply_markup=report_format_ikb)
             await state.set_state(Form.create_task_report)
     except Exception as e:
         await message.answer('Дата указана неверно. Укажите сроки выполнения задачи в формате дд.мм.гггг:',
                              reply_markup=back_kb)
 
 
-@router.message(Form.create_task_report)
-async def create_task_get_report(message: Message, state: FSMContext):
-    if len(message.text) > 30:
-        await message.answer('Макс. количество символов: 30\nУкажите формат отчета о выполнении задач',
-                             reply_markup=back_kb)
-        return
-    if message.text == 'Меню команд':
-        await message.answer('Задача не создана',
-                             reply_markup=admin_keyboard)
+@router.callback_query(Form.create_task_report)
+async def create_task_get_report(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'back':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Меню команд', callback_data='no_report')]]
+            )
+        )
+        await callback.message.answer(text=f'Задача не создана',
+                                      reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
         return
-    await state.update_data(report=message.text)
+    if callback.data == 'no_report':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Без отчета', callback_data='no_report')]]
+            )
+        )
+    elif callback.data == 'message':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Сообщение', callback_data='message')]]
+            )
+        )
+    elif callback.data == 'file':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Файл', callback_data='file')]]
+            )
+        )
+
+    await state.update_data(report=callback.data)
     data = await state.get_data()
-    create_task(data, message.from_user.username)
-    await message.answer('Задача создана', reply_markup=admin_keyboard)
+    create_task(data, callback.from_user.username)
+    await callback.message.answer('Задача создана', reply_markup=admin_keyboard)
     await state.set_state(Form.main_admin)
+
+
+@router.message(Form.create_task_report)
+async def create_task_get_report(message: Message, state: FSMContext):
+    await message.answer('Некорректный запрос',
+                         reply_markup=back_kb)
 
 
 def create_task(task, admin):

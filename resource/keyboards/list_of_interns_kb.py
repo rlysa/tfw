@@ -20,3 +20,9 @@ def list_of_interns_select_kb(list_interns, selected):
     buttons.append([InlineKeyboardButton(text='Меню команд', callback_data='back')])
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     return keyboard
+
+
+def list_of_interns_selected_kb(list_interns, selected):
+    buttons = [[InlineKeyboardButton(text=f'\U00002705 {i[0]}', callback_data=i[1])] for i in list_interns if i[1] in selected]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    return keyboard

@@ -17,3 +17,12 @@ change_task_buttons = [
     [InlineKeyboardButton(text='Меню команд', callback_data='back')]
 ]
 change_task_ikb = InlineKeyboardMarkup(inline_keyboard=change_task_buttons)
+
+report_format_buttons = [
+    [InlineKeyboardButton(text='Без отчета', callback_data='no_report')],
+    [InlineKeyboardButton(text='Сообщение', callback_data='message')],
+    [InlineKeyboardButton(text='Файл', callback_data='file')],
+    [InlineKeyboardButton(text='Меню команд', callback_data='back')]
+]
+
+report_format_ikb = InlineKeyboardMarkup(inline_keyboard=report_format_buttons)
