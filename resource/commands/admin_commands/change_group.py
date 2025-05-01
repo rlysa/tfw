@@ -1,3 +1,5 @@
+from pstats import func_get_function_name
+
 from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
@@ -10,7 +12,8 @@ from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.back_button import back_kb
 from ...keyboards.change_task_group_profile_kb import change_group_ikb
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
-# from db.db_request.delete_group import delete_group
+from db.db_request.delete_group import delete_group
+from db.db_request.change_group import change_groups_info
 
 
 router = Router()
@@ -26,7 +29,7 @@ async def change_delete_group(callback: CallbackQuery, state: FSMContext):
                                       reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
     elif callback.data == 'delete':
-        # func_delete_group(group)
+        func_delete_group(group)
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[[InlineKeyboardButton(text='Удалить', callback_data='delete')]]))
@@ -44,8 +47,8 @@ async def change_delete_group(message: Message, state: FSMContext):
     await message.answer('Некорректный запрос')
 
 
-# def func_delete_group(groups_id):
-#     delete_group(groups_id)
+def func_delete_group(groups_id):
+    delete_group(groups_id)
 
 
 @router.callback_query(Form.change_group)
@@ -151,7 +154,6 @@ async def change_group_interns(message: Message, state: FSMContext):
 
 
 def func_change_group(groups_id, field, value):
-    return True
-    # if change_groups_info(groups_id, field, value):
-    #     return True
-    # return False
+    if change_groups_info(groups_id, field, value):
+        return True
+    return False

@@ -14,8 +14,8 @@ def groups_info(id):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
     group = cursor.execute(f'''SELECT name, interns FROM Groups WHERE id="{id}"''').fetchone()
-    interns_usernames = '( "' + '", "'.join([i for i in group[1].split(',')]) + '" )'
+    interns_usernames = '( "' + '", "'.join([i for i in group[1].split()]) + '" )'
     interns_names = cursor.execute(f'''SELECT surname, name, middle_name FROM Users WHERE username in {interns_usernames}''').fetchall()
-    interns_usernames = group[1].split(',')
+    interns_usernames = group[1].split(' ')
     info = [group[0], [' '.join(interns_names[i]) + ' - @' + interns_usernames[i] for i in range(len(interns_usernames))]]
     return info
