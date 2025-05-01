@@ -10,7 +10,7 @@ from db.db_request.list_tasks import tasks_info_admin
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.back_button import back_kb
-from ...keyboards.change_task_kb import change_task_ikb, report_format_ikb
+from ...keyboards.change_task_group_profile_kb import change_task_ikb, report_format_ikb
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
 from db.db_request.change_task import change_tasks_info
 from db.db_request.delete_task import delete_task
@@ -164,6 +164,14 @@ async def change_task_new(message: Message, state: FSMContext):
 
 @router.callback_query(Form.change_task_report)
 async def change_task_report(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'back':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Меню команд', callback_data='back')]]))
+        await callback.message.answer(text=f'Задача не была изменена',
+                                      reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+
     if callback.data == 'no_report':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
@@ -224,6 +232,9 @@ async def change_task_interns(callback: CallbackQuery, state: FSMContext):
                 reply_markup=admin_keyboard)
             await state.set_state(Form.main_admin)
     elif callback.data == 'back':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Меню команд', callback_data='back')]]))
         await callback.message.answer(text=f'Задача не была изменена',
                                       reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)

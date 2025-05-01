@@ -5,12 +5,11 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from datetime import datetime
 
-from db.db_request.list_tasks import tasks_info_admin
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
 from ...keyboards.back_button import back_kb
-from ...keyboards.change_task_kb import report_format_ikb
+from ...keyboards.change_task_group_profile_kb import report_format_ikb
 from db.db_request.create_task import new_task
 from db.db_request.list_interns import list_of_interns
 
@@ -56,6 +55,9 @@ async def create_task_get_interns(callback: CallbackQuery, state: FSMContext):
                                       reply_markup=back_kb)
         await state.set_state(Form.create_task_description)
     elif callback.data == 'back':
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Меню команд', callback_data='back')]]))
         await callback.message.answer(text=f'Задача не создана',
                                       reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)

@@ -1,12 +1,12 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-tasks_ibuttons = [
+change_delete_buttons = [
     [InlineKeyboardButton(text='Изменить', callback_data='change')],
     [InlineKeyboardButton(text='Удалить', callback_data='delete')],
     [InlineKeyboardButton(text='Меню команд', callback_data='back')]
 ]
-tasks_ikeyboard = InlineKeyboardMarkup(inline_keyboard=tasks_ibuttons)
+change_delete_ikb = InlineKeyboardMarkup(inline_keyboard=change_delete_buttons)
 
 change_task_buttons = [
     [InlineKeyboardButton(text='Изменить название', callback_data='name')],
