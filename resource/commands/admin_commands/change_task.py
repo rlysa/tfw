@@ -3,12 +3,15 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from datetime import datetime
+
 from db.db_request.list_interns import list_of_interns
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.back_button import back_kb
 from ...keyboards.change_task_kb import change_task_ikb
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb
+from db.db_request.change_task import change_tasks_info
 
 
 router = Router()
@@ -70,28 +73,28 @@ async def change_task(callback: CallbackQuery, state: FSMContext):
                 inline_keyboard=[[InlineKeyboardButton(text='Изменить название', callback_data='name')]]))
         await callback.message.answer('Введите новое название:',
                                       reply_markup=back_kb)
-        await state.update_data(type='name')
+        await state.update_data(field='name')
     elif callback.data == 'deadline':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[[InlineKeyboardButton(text='Изменить дедлайн', callback_data='name')]]))
         await callback.message.answer('Введите новый срок выполнения задачи в формате дд.мм.гггг:',
                                       reply_markup=back_kb)
-        await state.update_data(type='deadline')
+        await state.update_data(field='deadline')
     elif callback.data == 'description':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[[InlineKeyboardButton(text='Изменить описание', callback_data='name')]]))
         await callback.message.answer('Введите новое описание:',
                                       reply_markup=back_kb)
-        await state.update_data(type='description')
+        await state.update_data(field='description')
     elif callback.data == 'report':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[[InlineKeyboardButton(text='Изменить формат отчета', callback_data='name')]]))
         await callback.message.answer('Введите новый формат отчета:',
                                       reply_markup=back_kb)
-        await state.update_data(type='report')
+        await state.update_data(field='report')
 
 
 @router.message(Form.change_task)
@@ -105,13 +108,44 @@ def func_list_of_interns(admin):
 
 @router.message(Form.change_task_new)
 async def change_task_new(message: Message, state: FSMContext):
-    if message.text == 'Меню команд':
-        await message.answer('Задача не была изменена:',
+    data = await state.get_data()
+    task, field = data['task'], data['field']
+    text = message.text
+    if text == 'Меню команд':
+        await message.answer('Задача не была изменена',
                              reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
-    else:
-        await message.answer('Ща доработаю, чтоб задачка менялась',
-                         reply_markup=admin_keyboard)
+        return
+
+    if field == 'name' and len(text) > 30:
+        await message.answer('Макс. количество символов: 30\nВведите название задачи:',
+                             reply_markup=back_kb)
+        return
+    elif field == 'deadline':
+        try:
+            if (datetime.strptime(text, "%d.%m.%Y").date() - datetime.today().date()).days < 1:
+                await message.answer(
+                    'Срок выполнения может быть назначен не ранее чем на завтра. Укажите сроки выполнения задачи в формате дд.мм.гггг:',
+                    reply_markup=back_kb)
+                return
+            else:
+                text = datetime.strptime(text, "%d.%m.%Y").date()
+        except Exception as e:
+            await message.answer('Дата указана неверно. Укажите сроки выполнения задачи в формате дд.мм.гггг:',
+                                 reply_markup=back_kb)
+            return
+    elif field == 'description' and len(text) > 3000:
+        await message.answer('Макс. количество символов: 3000\nВведите описание задачи:',
+                             reply_markup=back_kb)
+        return
+    elif field == 'report' and len(text) > 30:
+        await message.answer('Макс. количество символов: 30\nВведите формат отчета о выполнении задачи:',
+                             reply_markup=back_kb)
+        return
+
+    if func_change_task(task, field, text):
+        await message.answer('Задача изменена (вывести измененную задачу',
+                     reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
 
 
@@ -128,3 +162,9 @@ async def change_task_interns(message: Message, state: FSMContext):
     await message.answer('Ща доработаю, чтоб задачка менялась',
                          reply_markup=admin_keyboard)
     await state.set_state(Form.main_admin)
+
+
+def func_change_task(tasks_id, field, value):
+    if change_tasks_info(tasks_id, field, value):
+        return True
+    return False
