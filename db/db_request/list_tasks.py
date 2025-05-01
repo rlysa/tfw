@@ -46,4 +46,11 @@ def tasks_info_admin(id):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
     tasks = cursor.execute(f'SELECT * FROM Tasks WHERE id="{id}"').fetchall()
-    return tasks[0]
+    tasks = [i for i in tasks[0]]
+    if tasks[-2] == 'no_report':
+        tasks[-2] = 'Без отчета'
+    elif tasks[-2] == 'message':
+        tasks[-2] = 'Сообщение'
+    elif tasks[-2] == 'file':
+        tasks[-2] = 'Файл'
+    return tasks
