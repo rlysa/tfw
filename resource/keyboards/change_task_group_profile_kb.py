@@ -32,3 +32,16 @@ change_group_buttons = [
     [InlineKeyboardButton(text='Меню команд', callback_data='back')]
 ]
 change_group_ikb = InlineKeyboardMarkup(inline_keyboard=change_group_buttons)
+
+change_profile_buttons = [
+    [InlineKeyboardButton(text='Изменить', callback_data='change')],
+    [InlineKeyboardButton(text='Меню команд', callback_data='back')]
+]
+change_profile_ikb = InlineKeyboardMarkup(inline_keyboard=change_profile_buttons)
+
+what_change_profile_buttons = [
+    [InlineKeyboardButton(text='Изменить фамилию', callback_data='surname')],
+    [InlineKeyboardButton(text='Изменить имя', callback_data='name')],
+    [InlineKeyboardButton(text='Изменить отчество', callback_data='middle_name')]
+]
+what_change_profile_ikb = InlineKeyboardMarkup(inline_keyboard=what_change_profile_buttons)

@@ -64,7 +64,7 @@ async def change_task(callback: CallbackQuery, state: FSMContext):
     elif callback.data == 'interns':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить список стажеров', callback_data='name')]]))
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить список стажеров', callback_data='interns')]]))
         interns = func_list_of_interns(callback.from_user.username)
         await state.update_data(interns=interns)
         await callback.message.answer('Выберите стажеров из списка. Сделав выбор, нажмите "Далее"',
@@ -76,7 +76,7 @@ async def change_task(callback: CallbackQuery, state: FSMContext):
     elif callback.data == 'report':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить формат отчета', callback_data='name')]]))
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить формат отчета', callback_data='report')]]))
         await callback.message.answer('Укажите новый формат отчета:',
                                       reply_markup=report_format_ikb)
         await state.set_state(Form.change_task_report)
@@ -95,14 +95,14 @@ async def change_task(callback: CallbackQuery, state: FSMContext):
     elif callback.data == 'deadline':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить дедлайн', callback_data='name')]]))
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить дедлайн', callback_data='deadline')]]))
         await callback.message.answer('Введите новый срок выполнения задачи в формате дд.мм.гггг:',
                                       reply_markup=back_kb)
         await state.update_data(field='deadline')
     elif callback.data == 'description':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить описание', callback_data='name')]]))
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить описание', callback_data='description')]]))
         await callback.message.answer('Введите новое описание:',
                                       reply_markup=back_kb)
         await state.update_data(field='description')

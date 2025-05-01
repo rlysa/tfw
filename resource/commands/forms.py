@@ -26,6 +26,7 @@ class Form(StatesGroup):
     look_profile = State()
 
     change_profile = State()
+    change_profile_new = State()
 
     change_delete_task = State()
     change_task = State()

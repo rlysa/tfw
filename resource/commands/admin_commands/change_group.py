@@ -68,7 +68,7 @@ async def change_group(callback: CallbackQuery, state: FSMContext):
     elif callback.data == 'interns':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[InlineKeyboardButton(text='Изменить список стажеров', callback_data='name')]]))
+                inline_keyboard=[[InlineKeyboardButton(text='Изменить список стажеров', callback_data='interns')]]))
         interns = func_list_of_interns(callback.from_user.username)
         await state.update_data(interns=interns)
         await callback.message.answer('Выберите стажеров из списка. Сделав выбор, нажмите "Далее"',
