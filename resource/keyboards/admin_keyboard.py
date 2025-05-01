@@ -20,7 +20,7 @@ tasks_keyboard = ReplyKeyboardMarkup(keyboard=tasks_buttons,
 
 group_buttons = [
     [KeyboardButton(text='Создать группу'), KeyboardButton(text='Посмотреть группы')],
-    [KeyboardButton(text='Изменить группу'), KeyboardButton(text='Удалить группу')],
+    # [KeyboardButton(text='Изменить группу'), KeyboardButton(text='Удалить группу')],
     [KeyboardButton(text='Меню команд')]
 ]
 group_keyboard = ReplyKeyboardMarkup(keyboard=group_buttons,

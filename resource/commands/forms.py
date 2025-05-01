@@ -13,7 +13,6 @@ class Form(StatesGroup):
     registration_middle_name = State()
     registration_skills = State()
 
-    main_intern = State()
     look_interns_info = State()
     look_groups_info = State()
     view_the_task_list = State()
@@ -22,7 +21,6 @@ class Form(StatesGroup):
     main_menu = State()
     changing_info = State()
 
-    main_admin = State()
     tasks_command = State()
     look_tasks = State()
     look_profile = State()
@@ -34,6 +32,11 @@ class Form(StatesGroup):
     change_task_new = State()
     change_task_report = State()
     change_task_interns = State()
+
+    change_delete_group = State()
+    change_group = State()
+    change_group_name = State()
+    change_group_interns = State()
 
     create_task_name = State()
     create_task_interns = State()

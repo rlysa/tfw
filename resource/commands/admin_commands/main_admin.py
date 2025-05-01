@@ -49,12 +49,12 @@ async def tasks_commands(message: Message, state: FSMContext):
         await message.answer('Список задач:',
                              reply_markup=list_of_tasks_admin_kb(message.from_user.username))
         await state.set_state(Form.look_tasks)
-    elif message.text == 'Изменить задачу':
-        await message.answer('В разработке',
-                             reply_markup=tasks_keyboard)
-    elif message.text == 'Удалить задачу':
-        await message.answer('В разработке',
-                             reply_markup=tasks_keyboard)
+    # elif message.text == 'Изменить задачу':
+    #     await message.answer('В разработке',
+    #                          reply_markup=tasks_keyboard)
+    # elif message.text == 'Удалить задачу':
+    #     await message.answer('В разработке',
+    #                          reply_markup=tasks_keyboard)
     elif message.text == 'Меню команд':
         await message.answer('Выберите команду:',
                              reply_markup=admin_keyboard)
@@ -74,12 +74,12 @@ async def groups_commands(message: Message, state: FSMContext):
         await message.answer('Список групп:',
                              reply_markup=list_of_groups_kb(message.from_user.username))
         await state.set_state(Form.look_groups_info)
-    elif message.text == 'Изменить группу':
-        await message.answer('В разработке',
-                             reply_markup=group_keyboard)
-    elif message.text == 'Удалить группу':
-        await message.answer('В разработке',
-                             reply_markup=group_keyboard)
+    # elif message.text == 'Изменить группу':
+    #     await message.answer('В разработке',
+    #                          reply_markup=group_keyboard)
+    # elif message.text == 'Удалить группу':
+    #     await message.answer('В разработке',
+    #                          reply_markup=group_keyboard)
     elif message.text == 'Меню команд':
         await message.answer('Выберите команду:',
                              reply_markup=admin_keyboard)

@@ -24,5 +24,11 @@ report_format_buttons = [
     [InlineKeyboardButton(text='Файл', callback_data='file')],
     [InlineKeyboardButton(text='Меню команд', callback_data='back')]
 ]
-
 report_format_ikb = InlineKeyboardMarkup(inline_keyboard=report_format_buttons)
+
+change_group_buttons = [
+    [InlineKeyboardButton(text='Изменить название', callback_data='name')],
+    [InlineKeyboardButton(text='Изменить список стажеров', callback_data='interns')],
+    [InlineKeyboardButton(text='Меню команд', callback_data='back')]
+]
+change_group_ikb = InlineKeyboardMarkup(inline_keyboard=change_group_buttons)
