@@ -15,7 +15,6 @@ def groups_info(id):
     cursor = connection.cursor()
     group = cursor.execute(f'''SELECT name, interns FROM Groups WHERE id="{id}"''').fetchone()
     interns_usernames = '( "' + '", "'.join([i for i in group[1].split()]) + '" )'
-    interns_names = cursor.execute(f'''SELECT surname, name, middle_name FROM Users WHERE username in {interns_usernames}''').fetchall()
-    interns_usernames = group[1].split(' ')
-    info = [group[0], [' '.join(interns_names[i]) + ' - @' + interns_usernames[i] for i in range(len(interns_usernames))]]
+    interns_names = cursor.execute(f'''SELECT username, surname, name, middle_name FROM Users WHERE username in {interns_usernames}''').fetchall()
+    info = [group[0], [' '.join(interns_names[i][1:]) + ' - @' + interns_names[i][0] for i in range(len(interns_names))]]
     return info
