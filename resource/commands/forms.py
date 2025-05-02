@@ -21,6 +21,7 @@ class Form(StatesGroup):
 
     interns_commands = State()
     look_interns_info = State()
+    delete_intern = State()
 
     look_profile = State()
     change_profile = State()
