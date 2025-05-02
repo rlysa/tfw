@@ -26,3 +26,12 @@ group_buttons = [
 group_keyboard = ReplyKeyboardMarkup(keyboard=group_buttons,
                                      resize_keyboard=True,
                                      one_time_keyboard=True)
+
+interns_buttons = [
+    [KeyboardButton(text='Посмотреть список'), KeyboardButton(text='Поиск по скиллам')],
+    # [KeyboardButton(text='Изменить группу'), KeyboardButton(text='Удалить группу')],
+    [KeyboardButton(text='Меню команд')]]
+interns_keyboard = ReplyKeyboardMarkup(keyboard=interns_buttons,
+                                     resize_keyboard=True,
+                                     one_time_keyboard=True)
+

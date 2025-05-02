@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
 from ..forms import Form
-from ...keyboards.admin_keyboard import admin_keyboard, tasks_keyboard, group_keyboard
+from ...keyboards.admin_keyboard import admin_keyboard, tasks_keyboard, group_keyboard, interns_keyboard
 from ...keyboards.list_of_interns_kb import list_of_interns_kb
 from ...keyboards.list_of_groups_kb import list_of_groups_kb
 from ...keyboards.list_of_tasks_kb import list_of_tasks_admin_kb
@@ -20,15 +20,18 @@ async def main_admin(message: Message, state: FSMContext):
     if message.text == 'Задачи':
         await message.answer('Выберите команду:',
                              reply_markup=tasks_keyboard)
-        await state.set_state(Form.tasks_command)
+        await state.set_state(Form.tasks_commands)
     elif message.text == 'Группы':
         await message.answer('Выберите команду:',
                              reply_markup=group_keyboard)
         await state.set_state(Form.groups_commands)
     elif message.text == 'Стажеры':
-        await message.answer('Список стажеров:',
-                             reply_markup=list_of_interns_kb(message.from_user.username))
-        await state.set_state(Form.look_interns_info)
+        await message.answer('Выберите команду:',
+                             reply_markup=interns_keyboard)
+        await state.set_state(Form.interns_commands)
+        # await message.answer('Список стажеров:',
+        #                      reply_markup=list_of_interns_kb(message.from_user.username))
+        # await state.set_state(Form.look_interns_info)
     elif message.text == 'Профиль':
         profile = profile_info(message.from_user.username)
         await message.answer(f'ФИО: {profile[1]}\nКлюч: {profile[0]}',  # поменять, в разделе профиль добавить кнопку "получить ключ", которая обновляет ключ для регистрации стажера
@@ -39,7 +42,28 @@ async def main_admin(message: Message, state: FSMContext):
                              reply_markup=admin_keyboard)
 
 
-@router.message(Form.tasks_command)
+@router.message(Form.interns_commands)
+async def interns_commands(message: Message, state: FSMContext):
+    if message.text == 'Посмотреть список':
+        await message.answer('Список стажеров:',
+                             reply_markup=list_of_interns_kb(message.from_user.username))
+        await state.set_state(Form.look_interns_info)
+    elif message.text == 'Поиск по скиллам':
+        await message.answer('В разработке',
+                             reply_markup=admin_keyboard)
+        # await message.answer('Введите слово для поиска:',
+        #                      reply_markup=back_kb)
+        await state.set_state(Form.main_admin)
+    elif message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=tasks_keyboard)
+
+
+@router.message(Form.tasks_commands)
 async def tasks_commands(message: Message, state: FSMContext):
     if message.text == 'Создать задачу':
         await message.answer('Введите название задачи:',
