@@ -29,6 +29,7 @@ dp.include_router(change_profile_router)
 dp.include_router(look_tasks_router)
 dp.include_router(change_task_router)
 dp.include_router(change_group_router)
+dp.include_router(skill_search_router)
 # dp.include_router(accept_new_user_router)
 
 

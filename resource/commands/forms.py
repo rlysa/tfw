@@ -19,6 +19,8 @@ class Form(StatesGroup):
     main_menu = State()
     changing_info = State()
 
+    skill_search = State()
+
     interns_commands = State()
     look_interns_info = State()
     delete_intern = State()

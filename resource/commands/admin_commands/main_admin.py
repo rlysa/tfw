@@ -49,11 +49,11 @@ async def interns_commands(message: Message, state: FSMContext):
                              reply_markup=list_of_interns_kb(message.from_user.username))
         await state.set_state(Form.look_interns_info)
     elif message.text == 'Поиск по скиллам':
-        await message.answer('В разработке',
-                             reply_markup=admin_keyboard)
-        # await message.answer('Введите слово для поиска:',
-        #                      reply_markup=back_kb)
-        await state.set_state(Form.main_admin)
+        # await message.answer('В разработке',
+        #                      reply_markup=admin_keyboard)
+        await message.answer('Введите слово для поиска:',
+                             reply_markup=back_kb)
+        await state.set_state(Form.skill_search)
     elif message.text == 'Меню команд':
         await message.answer('Выберите команду:',
                              reply_markup=admin_keyboard)
