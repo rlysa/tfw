@@ -18,5 +18,13 @@ def interns_info(username):
     cursor = connection.cursor()
     intern = cursor.execute(f'''SELECT surname, name, middle_name FROM Users WHERE username="{username}"''').fetchone()
     interns_skills = cursor.execute(f'''SELECT skills FROM Interns WHERE username="{username}"''').fetchone()
-    intern = [' '.join([i for i in intern]), interns_skills[0]]
+    interns_groups = cursor.execute(f'SELECT name, interns FROM Groups').fetchall()
+    interns_groups = [i[0] for i in interns_groups if username in i[1].split()]
+    interns_tasks = cursor.execute(f'SELECT name, interns, done FROM Tasks').fetchall()
+    interns_tasks = [(f'\U00002705 {i[0]}' if i[2] else i[0]) for i in interns_tasks if username in i[1].split()]
+    if not interns_groups:
+        interns_groups = ['']
+    if not interns_tasks:
+        interns_tasks = ['']
+    intern = [' '.join([i for i in intern]), interns_skills[0], '\n'.join(interns_groups), '\n'.join(interns_tasks)]
     return intern

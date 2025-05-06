@@ -24,8 +24,9 @@ async def look_interns_info(callback: CallbackQuery, state: FSMContext):
         username = callback.data
         info = interns_info(username)
         await callback.message.edit_text(text=f'Список стажеров:\n\n{list_interns}')
-        await callback.message.answer(text=f'{info[0]}\n@{username}\n\nСкиллы:\n{info[1]}',
-                                      reply_markup=delete_intern_ikb)
+        await callback.message.answer(
+            text=f'{info[0]}\n@{username}\n\nСкиллы:\n{info[1]}\n\nГруппы:\n{info[2]}\n\nЗадачи:\n{info[3]}',
+            reply_markup=delete_intern_ikb)
         await state.set_state(Form.delete_intern)
         await state.update_data(username=username)
 
