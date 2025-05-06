@@ -3,8 +3,15 @@ import sqlite3
 from config import DB_NAME
 
 
-def skill_search_interns(word):
+def skill_search_interns(word, admin):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
-    interns_skills = cursor.execute('SELECT username, skills FROM Interns').fetchall()
-    return 'user3'
+    interns_skills = cursor.execute(f'SELECT username, skills FROM Interns WHERE admin="{admin}"').fetchall()
+    result = []
+    for i in interns_skills:
+        skills = i[1].split()
+        if [j for j in skills if word in j]:
+            intern = cursor.execute(f'SELECT surname, name, middle_name FROM Users WHERE username="{i[0]}"').fetchone()
+            result.append(f'{" ".join(intern)}\n{i[1]} - @{i[0]}')
+    print(result)
+    return result

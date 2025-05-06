@@ -16,7 +16,8 @@ async def skill_search(message: Message, state: FSMContext):
         await message.answer('Выберите команду:',
                              reply_markup=admin_keyboard)
     else:
-        interns = skill_search_interns(message.text)
-        await message.answer('Какие-то пользователи',
+        interns_skills = skill_search_interns(message.text, message.from_user.username)
+        text = '\n\n'.join(interns_skills) if interns_skills else 'Стажеры с запрашиваемым скиллом не найдены'
+        await message.answer(f'{text}',
                              reply_markup=admin_keyboard)
     await state.set_state(Form.main_admin)
