@@ -1,57 +1,84 @@
-# db/db_request/task_completion.py
 import sqlite3
 from datetime import datetime
 from config import DB_NAME
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
 
 def save_text_report(task_id: int, user_id: int, text: str) -> bool:
-    """Сохраняет текстовый отчет в таблицу Tasks"""
+    """Сохраняет текстовый отчет"""
     try:
+        new_entry = {
+            'type': 'text',
+            'timestamp': datetime.now().strftime("%d.%m.%Y %H:%M"),
+            'content': text,
+            'user_id': user_id
+        }
+
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
-
-            # Получаем текущий отчет (если есть)
             cursor.execute("SELECT report FROM Tasks WHERE id = ?", (task_id,))
-            current_report = cursor.fetchone()[0] or ""
+            result = cursor.fetchone()
 
-            # Формируем новый отчет с меткой времени
-            new_report = f"{current_report}\n\n[{datetime.now().strftime('%d.%m.%Y %H:%M')}] {text}"
+            report_data = []
+            if result and result[0]:
+                try:
+                    report_data = json.loads(result[0])
+                except json.JSONDecodeError:
+                    logger.error("Ошибка декодирования JSON, создаем новый отчет")
 
-            # Обновляем запись
+            if not isinstance(report_data, list):
+                report_data = []
+
+            report_data.append(new_entry)
+
             cursor.execute(
                 "UPDATE Tasks SET report = ? WHERE id = ?",
-                (new_report.strip(), task_id)
+                (json.dumps(report_data), task_id)
             )
             conn.commit()
             return True
-    except sqlite3.Error as e:
-        logger.error(f"Ошибка БД при сохранении текстового отчета: {e}")
+    except Exception as e:
+        logger.error(f"Ошибка сохранения текста: {e}")
         return False
 
 
 def save_file_report(task_id: int, user_id: int, file_id: str, file_type: str) -> bool:
-    """Сохраняет информацию о файловом отчете в таблицу Tasks"""
+    """Сохраняет файловый отчет"""
     try:
+        new_entry = {
+            'type': 'file',
+            'timestamp': datetime.now().strftime("%d.%m.%Y %H:%M"),
+            'file_id': file_id,
+            'file_type': file_type,
+            'user_id': user_id
+        }
+
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
-
-            # Получаем текущий отчет (если есть)
             cursor.execute("SELECT report FROM Tasks WHERE id = ?", (task_id,))
-            current_report = cursor.fetchone()[0] or ""
+            result = cursor.fetchone()
 
-            # Формируем запись о файле
-            file_record = f"\n\n[{datetime.now().strftime('%d.%m.%Y %H:%M')}] Файл ({file_type}): {file_id}"
+            report_data = []
+            if result and result[0]:
+                try:
+                    report_data = json.loads(result[0])
+                except json.JSONDecodeError:
+                    logger.error("Ошибка декодирования JSON, создаем новый отчет")
 
-            # Обновляем запись
+            if not isinstance(report_data, list):
+                report_data = []
+
+            report_data.append(new_entry)
+
             cursor.execute(
                 "UPDATE Tasks SET report = ? WHERE id = ?",
-                (f"{current_report}{file_record}".strip(), task_id)
+                (json.dumps(report_data), task_id)
             )
             conn.commit()
             return True
-    except sqlite3.Error as e:
-        logger.error(f"Ошибка БД при сохранении файлового отчета: {e}")
+    except Exception as e:
+        logger.error(f"Ошибка сохранения файла: {e}")
         return False
