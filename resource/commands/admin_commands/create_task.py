@@ -157,7 +157,8 @@ async def create_task_get_report(callback: CallbackQuery, state: FSMContext):
     bot = Bot(TOKEN)
     for i in ids:
         await bot.send_message(chat_id=i,
-                               text=f'У вас новая задача "\'{info[0]}\'"!')
+                               text=f'У вас новая задача "{info[0]}"!')
+    await bot.session.close()
     await state.set_state(Form.main_admin)
 
 

@@ -27,9 +27,7 @@ async def look_tasks(callback: CallbackQuery, state: FSMContext):
         await callback.message.edit_text(text=f'Список задач:\n\n{list_tasks}')
         await callback.message.answer(text=f'Название: {info[1]}\n\nСтажеры:\n{interns}\nДедлайн: {'.'.join(info[5].split('-')[::-1])}\nОписание: {
         info[4]}\nФормат отчета: {info[6]}\nСтатус: {"не выполнена" if info[-1] == 'False' else "выполнена"}',
-                                      reply_markup=tasks_commands(
-                                          True if info[-1] != 'False' else False
-                                      ))
+                                      reply_markup=tasks_commands(info[6], info[-1]))
         await state.set_state(Form.change_delete_task)
         await state.update_data(task=info[0])
 

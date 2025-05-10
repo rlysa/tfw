@@ -48,14 +48,15 @@ def list_of_tasks_admin_kb(admin):
     return keyboard
 
 
-def tasks_commands(done):
+def tasks_commands(report, done):
     buttons = [[InlineKeyboardButton(text='Изменить', callback_data='change')],
                [InlineKeyboardButton(text='Удалить', callback_data='delete')],
                [InlineKeyboardButton(text='Меню команд', callback_data='back')]]
-    if done:
+    if done != 'False':
         buttons.insert(2,
-                       [InlineKeyboardButton(text='Посмотреть отчет', callback_data='report')])
-        buttons.insert(3,
                        [InlineKeyboardButton(text='Вернуть на доработку', callback_data='return')])
+        if report != 'Без отчета':
+            buttons.insert(3,
+                           [InlineKeyboardButton(text='Посмотреть отчет', callback_data='report')])
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     return keyboard

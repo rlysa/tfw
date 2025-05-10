@@ -1,11 +1,12 @@
-from aiogram import Router
-from aiogram.types import Message, CallbackQuery
+from aiogram import Router, Bot
+from aiogram.types import Message, CallbackQuery, InputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from datetime import datetime
 
-from db.db_request.list_interns import list_of_interns
+from config import TOKEN
+from db.db_request.list_interns import list_of_interns, interns_ids
 from db.db_request.list_tasks import tasks_info_admin
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
@@ -14,6 +15,7 @@ from ...keyboards.change_task_group_profile_kb import change_task_ikb, report_fo
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
 from db.db_request.change_task import change_tasks_info
 from db.db_request.delete_task import delete_task
+from db.db_request.list_tasks import tasks_info_admin
 
 
 router = Router()
@@ -40,6 +42,35 @@ async def change_delete_task(callback: CallbackQuery, state: FSMContext):
         await callback.message.edit_reply_markup(reply_markup=change_task_ikb)
         await state.set_state(Form.change_task)
         await state.update_data(task=task)
+    elif callback.data == 'return':
+        if func_change_task(task, 'done', 'False'):
+            await callback.message.edit_reply_markup(
+                reply_markup=InlineKeyboardMarkup(
+                    inline_keyboard=[[InlineKeyboardButton(text='Вернуть на доработку', callback_data='return')]]))
+            await callback.message.answer(text=f'Задача отправлена на доработку',
+                                          reply_markup=admin_keyboard)
+            info = tasks_info_admin(task)
+            ids = interns_ids(info[2].split())
+            bot = Bot(TOKEN)
+            for i in ids:
+                await bot.send_message(chat_id=i,
+                                       text=f'Задача "{info[1]}" возвращена на доработку')
+            await bot.session.close()
+            await state.set_state(Form.main_admin)
+    elif callback.data == 'report':
+        info = tasks_info_admin(task)
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Посмотреть отчет', callback_data='report')]]))
+        if info[-2] == 'Файл':
+            # file = InputFile('Отчет 1.pdf')
+            # await callback.message.answer_document(file)
+            await callback.message.answer(text=f'Файл',
+                                          reply_markup=admin_keyboard)
+        else:
+            await callback.message.answer(text=f'Отчет:\n{info[-1]}',
+                                          reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
 
 
 @router.message(Form.change_delete_task)
