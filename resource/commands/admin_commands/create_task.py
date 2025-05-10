@@ -146,12 +146,11 @@ async def create_task_get_report(callback: CallbackQuery, state: FSMContext):
     info = [data['name'], data['description'], data['deadline'], data['report']]
     interns = '\n'.join(
         [' - @'.join(i) for i in list_of_interns(callback.from_user.username) if i[1] in data['selected']])
-    await callback.message.answer('Задача изменена')
+    await callback.message.answer('Задача создана')
     await callback.message.answer(
         text=f'Название: {info[0]}\n\nСтажеры:\n{interns}\nДедлайн: {'.'.join(f"{info[2]}".split('-')[::-1])}\nОписание: {
         info[1]}\nФормат отчета: {info[3]}\nСтатус: не выполнена',
         reply_markup=admin_keyboard)
-    await state.set_state(Form.main_admin)
     await state.set_state(Form.main_admin)
 
 
