@@ -13,17 +13,17 @@ def list_tasks(intern_username: str) -> List[Tuple[int, str, str, str, str]]:
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT id, name, description, done, deadline 
+                SELECT id, name, interns, description, done, deadline 
                 FROM Tasks 
-                WHERE interns = ?
                 ORDER BY deadline ASC
-            """, (intern_username,))
+            """)
 
             tasks = []
             for task in cursor.fetchall():
-                task_id, name, description, done, deadline = task
-                status = "completed" if done else "in_progress"
-                tasks.append((task_id, name, description, status, deadline))
+                task_id, name, interns, description, done, deadline = task
+                if intern_username in interns.split():
+                    status = "completed" if done else "in_progress"
+                    tasks.append((task_id, name, description, status, deadline))
 
             return tasks
 
