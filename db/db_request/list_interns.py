@@ -10,6 +10,7 @@ def list_of_interns(admin):
     interns_username_str = '( "' +  '", "'.join([i[0] for i in interns_username]) + '" )'
     interns_snm = cursor.execute(f'''SELECT surname, name, middle_name, username FROM Users WHERE username in {interns_username_str}''').fetchall()
     interns = [[' '.join(interns_snm[i][:-1]), interns_snm[i][-1]]  for i in range(len(interns_snm))]
+    connection.close()
     return interns
 
 
@@ -27,4 +28,14 @@ def interns_info(username):
     if not interns_tasks:
         interns_tasks = ['']
     intern = [' '.join([i for i in intern]), interns_skills[0], '\n'.join(interns_groups), '\n'.join(interns_tasks)]
+    connection.close()
     return intern
+
+
+def interns_ids(interns_username):
+    connection = sqlite3.connect(DB_NAME)
+    cursor = connection.cursor()
+    interns_username_str = '( "' + '", "'.join(interns_username) + '" )'
+    ids = cursor.execute(f'SELECT id FROM Users WHERE username in {interns_username_str}').fetchall()
+    connection.close()
+    return [i[0] for i in ids]

@@ -8,5 +8,7 @@ def get_admins_id(key):
     if key.isdigit():
         admins_username = cursor.execute(f'SELECT username FROM Admins WHERE key="{int(key)}"').fetchone()[0]
         admins_id = cursor.execute(f'SELECT id FROM Users WHERE username="{admins_username}"').fetchone()
+        connect.close()
         return admins_id[0]
+    connect.close()
     return

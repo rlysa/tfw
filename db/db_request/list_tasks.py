@@ -39,6 +39,7 @@ def list_of_tasks(admin):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
     tasks_names = cursor.execute(f'''SELECT id, name FROM Tasks WHERE admin="{admin}"''').fetchall()
+    connection.close()
     return tasks_names
 
 
@@ -53,4 +54,5 @@ def tasks_info_admin(id):
         tasks[-2] = 'Сообщение'
     elif tasks[-2] == 'file':
         tasks[-2] = 'Файл'
+    connection.close()
     return tasks

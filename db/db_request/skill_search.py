@@ -13,4 +13,5 @@ def skill_search_interns(word, admin):
         if [j for j in skills if word in j]:
             intern = cursor.execute(f'SELECT surname, name, middle_name FROM Users WHERE username="{i[0]}"').fetchone()
             result.append(f'{" ".join(intern)}\n{i[1]} - @{i[0]}')
+    connection.close()
     return result

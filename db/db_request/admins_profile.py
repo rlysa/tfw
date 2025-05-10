@@ -8,6 +8,7 @@ def profile_info(username):
     cursor = connection.cursor()
     key = cursor.execute(f'SELECT key FROM Admins WHERE username="{username}"').fetchone()[0]
     fio = cursor.execute(f'SELECT surname, name, middle_name FROM Users WHERE username="{username}"').fetchone()
+    connection.close()
     return key, ' '.join([i for i in fio])
 
 

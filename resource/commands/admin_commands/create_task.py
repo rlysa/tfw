@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import Router, Bot
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -12,6 +12,8 @@ from ...keyboards.back_button import back_kb
 from ...keyboards.change_task_group_profile_kb import report_format_ikb
 from db.db_request.create_task import new_task
 from db.db_request.list_interns import list_of_interns
+from db.db_request.list_interns import interns_ids
+from config import TOKEN
 
 
 router = Router()
@@ -146,11 +148,16 @@ async def create_task_get_report(callback: CallbackQuery, state: FSMContext):
     info = [data['name'], data['description'], data['deadline'], data['report']]
     interns = '\n'.join(
         [' - @'.join(i) for i in list_of_interns(callback.from_user.username) if i[1] in data['selected']])
+    ids = interns_ids(data['selected'])
     await callback.message.answer('Задача создана')
     await callback.message.answer(
         text=f'Название: {info[0]}\n\nСтажеры:\n{interns}\nДедлайн: {'.'.join(f"{info[2]}".split('-')[::-1])}\nОписание: {
         info[1]}\nФормат отчета: {info[3]}\nСтатус: не выполнена',
         reply_markup=admin_keyboard)
+    bot = Bot(TOKEN)
+    for i in ids:
+        await bot.send_message(chat_id=i,
+                               text=f'У вас новая задача "\'{info[0]}\'"!')
     await state.set_state(Form.main_admin)
 
 
