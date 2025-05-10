@@ -12,4 +12,4 @@ class Tasks(SqlAlchemyBase):
     description = sqlalchemy.Column(sqlalchemy.String)
     deadline = sqlalchemy.Column(sqlalchemy.Date)
     report = sqlalchemy.Column(sqlalchemy.String)
-    done = sqlalchemy.Column(sqlalchemy.String, default=False, autoincrement=True)
+    done = sqlalchemy.Column(sqlalchemy.String, default='False')

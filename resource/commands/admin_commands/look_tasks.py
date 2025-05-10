@@ -6,7 +6,7 @@ from ..forms import Form
 from db.db_request.list_tasks import list_of_tasks, tasks_info_admin
 from db.db_request.list_interns import list_of_interns
 from ...keyboards.admin_keyboard import admin_keyboard
-from ...keyboards.change_task_group_profile_kb import change_delete_ikb
+from ...keyboards.list_of_tasks_kb import tasks_commands
 
 
 router = Router()
@@ -26,8 +26,10 @@ async def look_tasks(callback: CallbackQuery, state: FSMContext):
         interns = '\n'.join([' - @'.join(i) for i in list_of_interns(callback.from_user.username) if i[1] in info[2].split()])
         await callback.message.edit_text(text=f'Список задач:\n\n{list_tasks}')
         await callback.message.answer(text=f'Название: {info[1]}\n\nСтажеры:\n{interns}\nДедлайн: {'.'.join(info[5].split('-')[::-1])}\nОписание: {
-        info[4]}\nФормат отчета: {info[6]}\nСтатус: {"не выполнена" if info[-1] != False else "выполнена"}',
-                                      reply_markup=change_delete_ikb)
+        info[4]}\nФормат отчета: {info[6]}\nСтатус: {"не выполнена" if info[-1] == 'False' else "выполнена"}',
+                                      reply_markup=tasks_commands(
+                                          True if info[-1] != 'False' else False
+                                      ))
         await state.set_state(Form.change_delete_task)
         await state.update_data(task=info[0])
 
