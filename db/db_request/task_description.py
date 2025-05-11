@@ -75,20 +75,24 @@ def format_report_text(report_data: List[Dict]) -> str:
     return "\n".join(text_parts) if len(text_parts) > 1 else "Нет данных в отчете"
 
 
-def change_task_status(task_id: int) -> bool:
-    """Изменяет статус задачи"""
+def change_task_status(task_id: int) -> tuple:
+    """Изменяет статус задачи и возвращает (успех, admin_username, task_name)"""
     try:
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT done FROM Tasks WHERE id = ?", (task_id,))
-            current_status = cursor.fetchone()[0]
+            cursor.execute("SELECT done, admin, name FROM Tasks WHERE id = ?", (task_id,))
+            result = cursor.fetchone()
+            if not result:
+                return (False, None, None)
+
+            current_status, admin_username, task_name = result
             new_status = not current_status
+
             cursor.execute(
                 "UPDATE Tasks SET done = ? WHERE id = ?",
-                (new_status, task_id)
-            )
+                (new_status, task_id))
             conn.commit()
-            return True
+            return (True, admin_username, task_name)
     except sqlite3.Error as e:
         logger.error(f"Ошибка изменения статуса: {e}")
-        return False
+        return (False, None, None)

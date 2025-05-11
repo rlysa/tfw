@@ -13,6 +13,7 @@ from db.db_request.task_description import (
 )
 from resource.keyboards.task_description_kb import get_task_description_kb
 from resource.keyboards.list_of_tasks_kb import list_of_tasks_kb
+from db.db_request.user_requests import get_admin_chat_id
 
 router = Router(name="view_task_description_router")
 logger = logging.getLogger(__name__)
@@ -145,9 +146,27 @@ async def handle_view_task(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.startswith("change_status_"))
 async def handle_change_status(callback: CallbackQuery, state: FSMContext):
-    """Обработчик изменения статуса"""
+    """Обработчик изменения статуса задачи"""
     task_id = int(callback.data.split("_")[2])
-    if change_task_status(task_id):
+    success, admin_username, task_name = change_task_status(task_id)
+
+    if success:
+        if admin_username and task_name:
+            admin_chat_id = get_admin_chat_id(admin_username)
+            if admin_chat_id:
+                try:
+                    await callback.bot.send_message(
+                        chat_id=admin_chat_id,
+                        text=f"🚀 Задача *{task_name}* выполнена!\n"
+                             f"🔗 ID задачи: {task_id}\n"
+                             f"👤 Стажёр: @{callback.from_user.username}",
+                        parse_mode="Markdown"
+                    )
+                except Exception as e:
+                    logger.error(f"Ошибка отправки уведомления админу {admin_username}: {e}")
+            else:
+                logger.warning(f"Админ {admin_username} не найден или не имеет прав")
+
         await show_task_description(callback.message, task_id)
         await callback.answer("Статус задачи обновлен!")
     else:
