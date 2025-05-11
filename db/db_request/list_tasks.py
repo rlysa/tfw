@@ -22,7 +22,7 @@ def list_tasks(intern_username: str) -> List[Tuple[int, str, str, str, str]]:
             for task in cursor.fetchall():
                 task_id, name, interns, description, done, deadline = task
                 if intern_username in interns.split():
-                    status = "completed" if done else "in_progress"
+                    status = "completed" if done != 'False' else "in_progress"
                     tasks.append((task_id, name, description, status, deadline))
 
             return tasks

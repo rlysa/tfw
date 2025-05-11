@@ -1,6 +1,9 @@
 import aiogram
+from aiogram import Bot
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
+
+from config import TOKEN
 from db.db_request.task_description import get_task_description, change_task_status
 from ...keyboards.task_description_kb import get_task_description_kb
 from ...keyboards.list_of_tasks_kb import list_of_tasks_kb
@@ -54,8 +57,12 @@ async def handle_change_status(callback: CallbackQuery, state: FSMContext):
     """Обработчик изменения статуса задачи"""
     task_id = int(callback.data.split("_")[2])
 
-    if change_task_status(task_id):
+    change_task_st = change_task_status(task_id)
+    if change_task_st:
         await show_task_description(callback.message, task_id)
+        bot = Bot(TOKEN)
+        await bot.send_message(chat_id=change_task_st[1], text=f'Задача "{change_task_st[0]}" выполнена')
+        await bot.session.close()
         await callback.answer("Статус задачи обновлен!")
     else:
         await callback.answer("⚠️ Не удалось изменить статус")
