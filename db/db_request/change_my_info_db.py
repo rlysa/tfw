@@ -16,7 +16,7 @@ def update_user_info(username: str, update_data: Dict[str, str]) -> bool:
             # Формируем SQL-запрос на основе переданных данных
             set_clause = ", ".join([f"{key} = ?" for key in update_data.keys()])
             values = list(update_data.values())
-            values.append(username.lower())
+            values.append(username)
 
             cursor.execute(
                 f"UPDATE Users SET {set_clause} WHERE username = ?",
@@ -42,7 +42,7 @@ def update_intern_skills(username: str, new_skills: str) -> bool:
 
             cursor.execute(
                 "UPDATE Interns SET skills = ? WHERE username = ?",
-                (new_skills, username.lower())
+                (new_skills, username)
             )
 
             conn.commit()

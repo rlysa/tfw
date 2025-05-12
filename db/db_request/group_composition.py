@@ -23,7 +23,7 @@ def get_group_composition(user_username: str) -> Optional[list[dict]]:
                 SELECT id, name, admin, interns 
                 FROM Groups
                 WHERE admin = ?
-            """, (user_username.lower(),))
+            """, (user_username,))
             admin_groups = cursor.fetchall()
 
             # Ищем группы, где пользователь является стажёром
@@ -32,9 +32,9 @@ def get_group_composition(user_username: str) -> Optional[list[dict]]:
                 FROM Groups
                 WHERE interns LIKE ? OR interns LIKE ? OR interns = ?
             """, (
-                f"{user_username.lower()} %",
-                f"% {user_username.lower()}",
-                user_username.lower()
+                f"{user_username} %",
+                f"% {user_username}",
+                user_username
             ))
             intern_groups = cursor.fetchall()
 
@@ -69,7 +69,7 @@ def get_group_composition(user_username: str) -> Optional[list[dict]]:
                 intern_usernames = [u.strip() for u in interns.split() if u.strip()]
 
                 for intern_username in intern_usernames:
-                    if intern_username.lower() == user_username.lower():
+                    if intern_username == user_username:
                         continue  # Пропускаем текущего пользователя
 
                     cursor.execute("""
