@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8000:8000
+    environment:
+      - DB_NAME=db/db/thw_db.db
+      - TOKEN=7602332436:AAEZ0Cw5QB4zHREMtteqIzBfUWM3kd8sMIM
+      - ADMIN_FATHER_PSW=1234567890
+      - ADMIN_PSW=1234567890

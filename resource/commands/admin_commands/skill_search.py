@@ -7,6 +7,7 @@ from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from db.db_request.skill_search import skill_search_interns
 
+
 router = Router()
 
 def enhance_search_with_regex(skill_query: str, username: str) -> list:
@@ -20,7 +21,8 @@ def enhance_search_with_regex(skill_query: str, username: str) -> list:
 @router.message(Form.skill_search)
 async def skill_search(message: Message, state: FSMContext):
     if message.text == 'Меню команд':
-        await message.answer('Выберите команду:', reply_markup=admin_keyboard)
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
     else:
         interns_skills = enhance_search_with_regex(message.text, message.from_user.username)
         text = '\n\n'.join(interns_skills) if interns_skills else 'Стажеры с запрашиваемым скиллом не найдены'
