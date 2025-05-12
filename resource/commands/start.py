@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from .forms import Form
 from db.db_request.new_user import is_new_user
 from resource.keyboards.admin_keyboard import admin_keyboard
+from resource.keyboards.admin_father_keyboard import admin_father_keyboard
 
 import asyncio
 
@@ -15,7 +16,7 @@ router = Router()
 @router.message(Command('start'))
 async def start(message: Message, state: FSMContext):
     is_new = is_new_user(message.from_user.id)
-    if is_new == True:
+    if is_new == True and is_new != 1:
         await message.answer('''Добро пожаловать!
 Данный бот предназначен для упрощения взаимодействия между руководителем и стажерами.
 Для дальнейшей работы пройдите регистрацию!''')
@@ -28,6 +29,10 @@ async def start(message: Message, state: FSMContext):
             await message.answer('Вы уже зарегистрированы',
                                  reply_markup=admin_keyboard)
             await state.set_state(Form.main_admin)
+        elif is_new == 1:
+            await message.answer('Вы уже зарегистрированы',
+                                 reply_markup=admin_father_keyboard)
+            await state.set_state(Form.main_admin_father)
         else:
             await message.answer('Вы уже зарегистрированы')
             await state.set_state(Form.main_intern)

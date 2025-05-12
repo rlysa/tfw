@@ -42,7 +42,8 @@ change_profile_ikb = InlineKeyboardMarkup(inline_keyboard=change_profile_buttons
 what_change_profile_buttons = [
     [InlineKeyboardButton(text='Изменить фамилию', callback_data='surname')],
     [InlineKeyboardButton(text='Изменить имя', callback_data='name')],
-    [InlineKeyboardButton(text='Изменить отчество', callback_data='middle_name')]
+    [InlineKeyboardButton(text='Изменить отчество', callback_data='middle_name')],
+    [InlineKeyboardButton(text='Меню команд', callback_data='back')]
 ]
 what_change_profile_ikb = InlineKeyboardMarkup(inline_keyboard=what_change_profile_buttons)
 

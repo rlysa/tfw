@@ -5,6 +5,7 @@ class Form(StatesGroup):
     start = State()
     block = State()
     main_admin = State()
+    main_admin_father = State()
     main_intern = State()
 
     registration_psw = State()

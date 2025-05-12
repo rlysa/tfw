@@ -33,6 +33,7 @@ dp.include_router(skill_search_router)
 # dp.include_router(accept_new_user_router)
 dp.include_router(task_completion_report_router)
 dp.include_router(send_message_router)
+dp.include_router(main_admin_father_router)
 
 
 def run_db():

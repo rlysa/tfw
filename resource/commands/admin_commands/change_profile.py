@@ -5,6 +5,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
+from ...keyboards.admin_father_keyboard import admin_father_keyboard
 from ...keyboards.back_button import back_kb
 from ...keyboards.change_task_group_profile_kb import what_change_profile_ikb
 from db.db_request.admins_profile import change_profile_info, profile_info
@@ -15,14 +16,19 @@ router = Router()
 
 @router.callback_query(Form.look_profile)
 async def look_profile(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    role = 1 if 'role' in data else 2
     if callback.data == 'back':
         await callback.message.delete_reply_markup()
+        keyboard = admin_keyboard if role == 2 else admin_father_keyboard
+        st = Form.main_admin if role == 2 else Form.main_admin_father
         await callback.message.answer(text=f'Выберите команду:',
-                                      reply_markup=admin_keyboard)
-        await state.set_state(Form.main_admin)
+                                      reply_markup=keyboard)
+        await state.set_state(st)
     elif callback.data == 'change':
         await callback.message.edit_reply_markup(reply_markup=what_change_profile_ikb)
         await state.set_state(Form.change_profile)
+        await state.update_data(role=role)
 
 
 @router.message(Form.look_profile)
@@ -32,11 +38,16 @@ async def look_profile(message: Message, state: FSMContext):
 
 @router.callback_query(Form.change_profile)
 async def change_profile(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    role = data['role']
     if callback.data == 'back':
         await callback.message.delete_reply_markup()
-        await callback.message.answer(text=f'Выберите команду:',
-                                      reply_markup=admin_keyboard)
-        await state.set_state(Form.main_admin)
+        keyboard = admin_keyboard if role == 2 else admin_father_keyboard
+        st = Form.main_admin if role == 2 else Form.main_admin_father
+        await callback.message.answer(text=f'Профиль не был изменен',
+                                      reply_markup=keyboard)
+        await state.set_state(st)
+        return
     elif callback.data == 'surname':
         await callback.message.edit_reply_markup(
             reply_markup=InlineKeyboardMarkup(
@@ -59,6 +70,7 @@ async def change_profile(callback: CallbackQuery, state: FSMContext):
                                       reply_markup=back_kb)
         await state.update_data(field='middle_name')
     await state.set_state(Form.change_profile_new)
+    await state.update_data(role=role)
 
 
 @router.message(Form.change_profile)
@@ -70,11 +82,14 @@ async def change_profile(message: Message, state: FSMContext):
 async def change_profile_new(message: Message, state: FSMContext):
     data = await state.get_data()
     field = data['field']
+    role = data['role']
     text = message.text
+    keyboard = admin_keyboard if role == 2 else admin_father_keyboard
+    st = Form.main_admin if role == 2 else Form.main_admin_father
     if text == 'Меню команд':
         await message.answer('Профиль не был изменен',
-                             reply_markup=admin_keyboard)
-        await state.set_state(Form.main_admin)
+                             reply_markup=keyboard)
+        await state.set_state(st)
         return
 
     if len(text) > 30:
@@ -86,8 +101,8 @@ async def change_profile_new(message: Message, state: FSMContext):
         profile = profile_info(message.from_user.username)
         await message.answer('Профиль изменен')
         await message.answer(f'ФИО: {profile[1]}\nКлюч: {profile[0]}',
-                             reply_markup=admin_keyboard)
-        await state.set_state(Form.main_admin)
+                             reply_markup=keyboard)
+        await state.set_state(st)
 
 
 def func_change_profile(username, field, value):
