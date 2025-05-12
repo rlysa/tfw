@@ -1,5 +1,5 @@
 from aiogram import Router, Bot
-from aiogram.types import Message, CallbackQuery, InputFile
+from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -8,6 +8,7 @@ from datetime import datetime
 from config import TOKEN
 from db.db_request.list_interns import list_of_interns, interns_ids
 from db.db_request.list_tasks import tasks_info_admin
+from db.db_request.task_description import get_full_report
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.back_button import back_kb
@@ -63,12 +64,26 @@ async def change_delete_task(callback: CallbackQuery, state: FSMContext):
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[[InlineKeyboardButton(text='Посмотреть отчет', callback_data='report')]]))
         if info[-2] == 'Файл':
-            # file = InputFile('Отчет 1.pdf')
-            # await callback.message.answer_document(file)
-            await callback.message.answer(text=f'Файл',
-                                          reply_markup=admin_keyboard)
+            report_data = get_full_report(task)
+
+            for entry in report_data:
+                if entry.get('type') == 'file':
+                    if entry.get('file_type') == 'document':
+                        await callback.message.answer_document(entry.get('file_id'),
+                                                               reply_markup=admin_keyboard)
+                    elif entry.get('file_type') == 'photo':
+                        await callback.message.answer_photo(entry.get('file_id'),
+                                                               reply_markup=admin_keyboard)
+                    elif entry.get('file_type') == 'video':
+                        await callback.message.answer_video(entry.get('file_id'),
+                                                               reply_markup=admin_keyboard)
+                    elif entry.get('file_type') == 'audio':
+                        await callback.message.answer_audio(entry.get('file_id'),
+                                                               reply_markup=admin_keyboard)
         else:
-            await callback.message.answer(text=f'Отчет:\n{info[-1]}',
+            report = [entry for entry in get_full_report(task)][-1]
+            report = report.get('content', '')
+            await callback.message.answer(text=f'Отчет:\n\n{report}',
                                           reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
 

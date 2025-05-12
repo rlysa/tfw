@@ -19,7 +19,7 @@ def save_text_report(task_id: int, user_id: int, text: str) -> bool:
 
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT report FROM Tasks WHERE id = ?", (task_id,))
+            cursor.execute("SELECT done FROM Tasks WHERE id = ?", (task_id,))
             result = cursor.fetchone()
 
             report_data = []
@@ -35,7 +35,7 @@ def save_text_report(task_id: int, user_id: int, text: str) -> bool:
             report_data.append(new_entry)
 
             cursor.execute(
-                "UPDATE Tasks SET report = ? WHERE id = ?",
+                "UPDATE Tasks SET done = ? WHERE id = ?",
                 (json.dumps(report_data), task_id)
             )
             conn.commit()
@@ -58,7 +58,7 @@ def save_file_report(task_id: int, user_id: int, file_id: str, file_type: str) -
 
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT report FROM Tasks WHERE id = ?", (task_id,))
+            cursor.execute("SELECT done FROM Tasks WHERE id = ?", (task_id,))
             result = cursor.fetchone()
 
             report_data = []
@@ -74,7 +74,7 @@ def save_file_report(task_id: int, user_id: int, file_id: str, file_type: str) -
             report_data.append(new_entry)
 
             cursor.execute(
-                "UPDATE Tasks SET report = ? WHERE id = ?",
+                "UPDATE Tasks SET done = ? WHERE id = ?",
                 (json.dumps(report_data), task_id)
             )
             conn.commit()

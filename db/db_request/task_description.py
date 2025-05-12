@@ -35,7 +35,7 @@ def get_full_report(task_id: int) -> Optional[List[Dict]]:
     try:
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT report FROM Tasks WHERE id = ?", (task_id,))
+            cursor.execute("SELECT done FROM Tasks WHERE id = ?", (task_id,))
             result = cursor.fetchone()
             if result and result[0]:
                 return json.loads(result[0])
