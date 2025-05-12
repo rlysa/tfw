@@ -60,3 +60,5 @@ class Form(StatesGroup):
 
     look_interns_af = State()
     delete_intern_af = State()
+    look_admins_af = State()
+    delete_admin_af = State()

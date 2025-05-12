@@ -10,7 +10,7 @@ def is_new_user(user_id):
     ids = cursor.execute('''SELECT id FROM Users''').fetchall()
     if (user_id, ) not in ids:
         connection.close()
-        return True
+        return 'new'
     else:
         role = cursor.execute(f'''SELECT role FROM Users WHERE id="{user_id}"''').fetchone()
         connection.close()

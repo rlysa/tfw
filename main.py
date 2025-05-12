@@ -34,11 +34,12 @@ dp.include_router(skill_search_router)
 dp.include_router(task_completion_report_router)
 dp.include_router(send_message_router)
 dp.include_router(main_admin_father_router)
+dp.include_router(look_users_router)
 
 
 def run_db():
     global_init(DB_NAME)
-    if is_new_user(123567890) == True:
+    if is_new_user(123567890) == 'new':
          new_user(123567890,
                   'admin', {'role': 2,
                             'surname': 'Admin',
