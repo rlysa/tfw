@@ -57,3 +57,6 @@ class Form(StatesGroup):
     change_group = State()
     change_group_name = State()
     change_group_interns = State()
+
+    look_interns_af = State()
+    delete_intern_af = State()
