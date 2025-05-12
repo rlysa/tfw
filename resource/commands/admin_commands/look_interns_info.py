@@ -6,6 +6,7 @@ from ..forms import Form
 from db.db_request.list_interns import list_of_interns, interns_info
 from db.db_request.delete_user import delete_user
 from ...keyboards.admin_keyboard import admin_keyboard
+from ...keyboards.back_button import back_kb
 from ...keyboards.change_task_group_profile_kb import delete_intern_ikb
 
 
@@ -33,7 +34,13 @@ async def look_interns_info(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.look_interns_info)
 async def look_interns_info(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 @router.callback_query(Form.delete_intern)
@@ -57,7 +64,13 @@ async def delete_intern(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.delete_intern)
 async def delete_intern(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 def func_delete_intern(username):

@@ -42,7 +42,13 @@ async def change_delete_group(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.change_delete_group)
 async def change_delete_group(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 def func_delete_group(groups_id):
@@ -80,7 +86,13 @@ async def change_group(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.change_group)
 async def change_group(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 def func_list_of_interns(admin):
@@ -147,8 +159,13 @@ async def change_group_interns(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.change_group_interns)
 async def change_group_interns(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
-                         reply_markup=back_kb)
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 def func_change_group(groups_id, field, value):

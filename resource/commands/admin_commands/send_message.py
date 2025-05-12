@@ -35,8 +35,13 @@ async def send_message_text(message: Message, state: FSMContext):
 
 @router.message(Form.send_message_interns)
 async def send_message_interns(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
-                         reply_markup=back_kb)
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 @router.callback_query(Form.send_message_interns)

@@ -36,8 +36,13 @@ async def create_group_get_name(message: Message, state: FSMContext):
 
 @router.message(Form.create_group_interns)
 async def create_group_get_interns(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
-                         reply_markup=back_kb)
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 @router.callback_query(Form.create_group_interns)

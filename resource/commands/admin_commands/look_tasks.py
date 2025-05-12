@@ -6,6 +6,7 @@ from ..forms import Form
 from db.db_request.list_tasks import list_of_tasks, tasks_info_admin
 from db.db_request.list_interns import list_of_interns
 from ...keyboards.admin_keyboard import admin_keyboard
+from ...keyboards.back_button import back_kb
 from ...keyboards.list_of_tasks_kb import tasks_commands
 
 
@@ -34,4 +35,10 @@ async def look_tasks(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.look_tasks)
 async def look_tasks(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)

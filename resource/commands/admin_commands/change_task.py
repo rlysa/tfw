@@ -75,7 +75,13 @@ async def change_delete_task(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.change_delete_task)
 async def change_delete_task(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 def func_delete_task(tasks_id):
@@ -141,7 +147,13 @@ async def change_task(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.change_task)
 async def change_task(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 def func_list_of_interns(admin):
@@ -239,8 +251,13 @@ async def change_task_report(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.change_task_report)
 async def change_task_report(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
-                         reply_markup=back_kb)
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 @router.callback_query(Form.change_task_interns)
@@ -281,8 +298,13 @@ async def change_task_interns(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.change_task_interns)
 async def change_task_interns(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос',
-                         reply_markup=back_kb)
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
 
 
 def func_change_task(tasks_id, field, value):

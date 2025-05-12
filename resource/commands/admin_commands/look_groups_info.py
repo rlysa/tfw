@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from ..forms import Form
 from db.db_request.list_groups import groups_info, list_of_groups
 from ...keyboards.admin_keyboard import admin_keyboard
+from ...keyboards.back_button import back_kb
 from ...keyboards.change_task_group_profile_kb import change_delete_ikb
 
 
@@ -32,4 +33,10 @@ async def look_groups_info(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Form.look_groups_info)
 async def look_groups_info(message: Message, state: FSMContext):
-    await message.answer('Некорректный запрос')
+    if message.text == 'Меню команд':
+        await message.answer('Выберите команду:',
+                             reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    else:
+        await message.answer('Некорректный запрос',
+                             reply_markup=back_kb)
