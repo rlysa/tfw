@@ -15,14 +15,14 @@ def get_full_user_info(username: str) -> Optional[Dict]:
             cursor = conn.cursor()
 
             # Получаем основную информацию из Users
-            cursor.execute("SELECT * FROM Users WHERE username = ?", (username.lower(),))
+            cursor.execute("SELECT * FROM Users WHERE username = ?", (username,))
             user_data = cursor.fetchone()
 
             if not user_data:
                 return None
 
             # Получаем навыки из таблицы Interns
-            cursor.execute("SELECT skills FROM Interns WHERE username = ?", (username.lower(),))
+            cursor.execute("SELECT skills FROM Interns WHERE username = ?", (username,))
             intern_data = cursor.fetchone()
 
             result = dict(user_data)
