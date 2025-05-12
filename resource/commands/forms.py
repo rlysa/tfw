@@ -20,6 +20,8 @@ class Form(StatesGroup):
     changing_info = State()
 
     skill_search = State()
+    send_message_text = State()
+    send_message_interns = State()
 
     interns_commands = State()
     look_interns_info = State()

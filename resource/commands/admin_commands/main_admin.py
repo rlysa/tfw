@@ -54,6 +54,10 @@ async def interns_commands(message: Message, state: FSMContext):
         await message.answer('Введите слово для поиска:',
                              reply_markup=back_kb)
         await state.set_state(Form.skill_search)
+    elif message.text == 'Отправить сообщение стажеру':
+        await message.answer('Введите текст сообщения:',
+                             reply_markup=back_kb)
+        await state.set_state(Form.send_message_text)
     elif message.text == 'Меню команд':
         await message.answer('Выберите команду:',
                              reply_markup=admin_keyboard)

@@ -18,3 +18,4 @@ from .admin_commands.change_task import router as change_task_router
 from .admin_commands.change_group import router as change_group_router
 from .admin_commands.skill_search import router as skill_search_router
 from .intern_commands.task_completion_report import router as task_completion_report_router
+from .admin_commands.send_message import router as send_message_router
