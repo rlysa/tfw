@@ -3,7 +3,7 @@ from .registration import router as registration_router
 from .admin_commands.main_admin import router as admin_main_router
 from .admin_commands.look_interns_info import router as look_interns_info_router
 from .admin_commands.look_groups_info import router as look_groups_info_router
-# from .intern_commands.view_the_task_list import router as view_the_task_list_router
+from .intern_commands.view_the_task_list import router as view_the_task_list_router
 from .intern_commands.view_task_description import router as view_task_description_router
 from .intern_commands.view_group_composition import router as view_group_composition_router
 from .intern_commands.view_check_my_info import router as view_check_my_info_router
@@ -17,3 +17,4 @@ from .admin_commands.look_tasks import router as look_tasks_router
 from .admin_commands.change_task import router as change_task_router
 from .admin_commands.change_group import router as change_group_router
 from .admin_commands.skill_search import router as skill_search_router
+from .intern_commands.task_completion_report import router as task_completion_report_router

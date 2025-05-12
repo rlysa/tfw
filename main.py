@@ -31,7 +31,7 @@ dp.include_router(change_task_router)
 dp.include_router(change_group_router)
 dp.include_router(skill_search_router)
 # dp.include_router(accept_new_user_router)
-
+dp.include_router(task_completion_report_router)
 
 def run_db():
     global_init(DB_NAME)
