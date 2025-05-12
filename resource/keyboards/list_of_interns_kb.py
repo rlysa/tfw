@@ -12,6 +12,7 @@ def list_of_interns_kb(admin):
 
 def list_of_admins_kb():
     buttons = [[InlineKeyboardButton(text=i[0], callback_data=i[1])] for i in list_of_admins()]
+    buttons.append([InlineKeyboardButton(text='Обновить ключи', callback_data='new_keys')])
     buttons.append([InlineKeyboardButton(text='Меню команд', callback_data='back')])
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     return keyboard

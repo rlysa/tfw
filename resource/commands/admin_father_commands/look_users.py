@@ -2,13 +2,9 @@ from aiogram import Router
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 
-from db.db_request.list_admins import list_of_admins, admins_info
+from db.db_request.list_admins import list_of_admins, admins_info, new_keys
 from resource.commands.forms import Form
-from resource.keyboards.admin_keyboard import interns_keyboard
 from resource.keyboards.admin_father_keyboard import admin_father_keyboard
-from resource.keyboards.list_of_interns_kb import list_of_interns_kb
-from resource.keyboards.change_task_group_profile_kb import change_profile_ikb
-from db.db_request.admins_profile import profile_info
 from db.db_request.list_interns import list_of_interns, interns_info
 from db.db_request.delete_user import delete_user
 from resource.keyboards.change_task_group_profile_kb import delete_intern_ikb
@@ -75,6 +71,13 @@ async def look_admins_af(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'back':
         await callback.message.delete()
         await callback.message.answer(text=f'Список админов:\n\n{list_admins}',
+                                      reply_markup=admin_father_keyboard)
+        await state.set_state(Form.main_admin_father)
+    elif callback.data == 'new_keys':
+        await callback.message.delete()
+        await callback.message.answer(text=f'Список админов:\n\n{list_admins}')
+        new_keys()
+        await callback.message.answer(text=f'Ключи обновлены',
                                       reply_markup=admin_father_keyboard)
         await state.set_state(Form.main_admin_father)
     else:
