@@ -1,14 +1,14 @@
-from aiogram import Router
+from aiogram import Router, Bot
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
+from config import TOKEN
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
-from ...keyboards.list_of_interns_kb import list_of_interns_select_kb
+from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
 from ...keyboards.back_button import back_kb
 from db.db_request.create_group import new_group
-from db.db_request.list_interns import list_of_interns
-
+from db.db_request.list_interns import list_of_interns, interns_ids
 
 router = Router()
 
@@ -44,10 +44,19 @@ async def create_group_get_interns(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     selected_interns = data['selected']
     if callback.data == 'next':
+        await callback.message.edit_reply_markup(
+            reply_markup=list_of_interns_selected_kb(data['interns'], selected_interns)
+        )
         await callback.message.answer(f'Группа "{data['name']}" создана\n\nСтажеры:\n{
         '\n'.join([i[0] + ' @' + i[1] for i in data['interns'] if i[1] in selected_interns])}',
                                       reply_markup=admin_keyboard)
         create_group(data['name'], callback.from_user.username, selected_interns)
+        ids = interns_ids(selected_interns)
+        bot = Bot(TOKEN)
+        for i in ids:
+            await bot.send_message(chat_id=i,
+                                   text=f'Вы добавлены в группу "{data['name']}"')
+        await bot.session.close()
         await state.set_state(Form.main_admin)
     elif callback.data == 'back':
         await callback.message.answer(text=f'Группа не создана',

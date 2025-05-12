@@ -29,6 +29,7 @@ group_keyboard = ReplyKeyboardMarkup(keyboard=group_buttons,
 
 interns_buttons = [
     [KeyboardButton(text='Посмотреть список'), KeyboardButton(text='Поиск по скиллам')],
+    [KeyboardButton(text='Отправить сообщение стажеру')],
     # [KeyboardButton(text='Изменить группу'), KeyboardButton(text='Удалить группу')],
     [KeyboardButton(text='Меню команд')]]
 interns_keyboard = ReplyKeyboardMarkup(keyboard=interns_buttons,
