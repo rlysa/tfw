@@ -8,3 +8,4 @@ class Interns(SqlAlchemyBase):
     username = sqlalchemy.Column(sqlalchemy.String, primary_key=True, unique=True)
     skills = sqlalchemy.Column(sqlalchemy.String)
     admin = sqlalchemy.Column(sqlalchemy.String)
+    resume = sqlalchemy.Column(sqlalchemy.String)

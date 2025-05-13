@@ -1,6 +1,8 @@
 import sqlite3
 from random import choices
 
+import json
+
 from config import DB_NAME
 
 
@@ -27,8 +29,8 @@ def new_user(user_id, username, user):
 
     if role == 3:
         admin = cursor.execute(f'''SELECT username FROM Admins WHERE key={user['admin']}''').fetchone()[0]
-        cursor.execute('''INSERT INTO Interns (username, skills, admin) VALUES (?, ?, ?)''',
-                       (username, user['skills'], admin))
+        cursor.execute('''INSERT INTO Interns (username, skills, admin, resume) VALUES (?, ?, ?, ?)''',
+                       (username, user['skills'], admin, json.dumps(user['resume'])))
     else:
         key = int(''.join(choices([f'{i}' for i in range(0, 10)], k=8))) if username != 'admin' else 11111111  # создание админа для тестов, пароль, чтоб не смотреть в бд, потом удалить
         cursor.execute('''INSERT INTO Admins (key, username) VALUES (?, ?)''',

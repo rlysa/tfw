@@ -13,6 +13,7 @@ class Form(StatesGroup):
     registration_name = State()
     registration_middle_name = State()
     registration_skills = State()
+    registration_resume = State()
 
     view_the_task_list = State()
     view_group_composition = State()

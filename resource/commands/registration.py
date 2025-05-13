@@ -1,5 +1,5 @@
 from aiogram import Router, Bot
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 from .forms import Form
@@ -83,7 +83,24 @@ async def registration_get_skills(message: Message, state: FSMContext):
     if len(message.text) > 300:
         await message.answer('Макс. количество символов: 300\nУкажите ваши скиллы:')
         return
+    await message.answer('Прикрепите резюме:')
     await state.update_data(skills=message.text)
+    await state.set_state(Form.registration_resume)
+
+
+@router.message(Form.registration_resume)
+async def registration_get_resume(message: Message, state:FSMContext):
+    if not message.document:
+        await message.answer('Прикрепите резюме в виде файла')
+        return
+
+    resume = {
+        'type': 'file',
+        'file_id': message.document.file_id,
+        'file_type': 'document',
+    }
+    await state.update_data(resume=resume)
+
     await message.answer('Регистрация завершена (Ждите подтверждения - реализовать)')
     bot = Bot(token=TOKEN)
     data = await state.get_data()
@@ -91,8 +108,13 @@ async def registration_get_skills(message: Message, state: FSMContext):
     #                        chat_id=get_admins_id(data['admin']),
     #                        reply_markup=accept_new_user_kb)
     await bot.session.close()
-    add_new_user(message.from_user.id, message.from_user.username, data) # делать только после регистрации
+    add_new_user(message.from_user.id, message.from_user.username, data)  # делать только после регистрации
     await state.set_state(Form.main_intern)
+
+
+@router.callback_query()
+async def accept_new_user(callback: CallbackQuery):
+    print(callback.data)
 
 
 def add_new_user(user_id, username, user):
