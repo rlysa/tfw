@@ -1,12 +1,7 @@
-import aiogram
 from aiogram import Bot, Router, F
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
-
 from config import TOKEN
-from db.db_request.task_description import get_task_description, change_task_status
-from ...keyboards.task_description_kb import get_task_description_kb
-from ...keyboards.list_of_tasks_kb import list_of_tasks_kb
 import logging
 from typing import Union
 
@@ -17,15 +12,14 @@ from db.db_request.task_description import (
     get_full_report,
     format_report_text
 )
-from resource.keyboards.task_description_kb import get_task_description_kb
-from resource.keyboards.list_of_tasks_kb import list_of_tasks_kb
+from ...keyboards.task_description_kb import get_task_description_kb, get_report_options_kb
+from ...keyboards.list_of_tasks_kb import list_of_tasks_kb
 
 router = Router(name="view_task_description_router")
 logger = logging.getLogger(__name__)
 
 
 async def show_task_description(message_or_callback: Union[Message, CallbackQuery], task_id: int):
-    """Универсальная функция показа задачи"""
     try:
         if isinstance(message_or_callback, CallbackQuery):
             message = message_or_callback.message
@@ -41,8 +35,9 @@ async def show_task_description(message_or_callback: Union[Message, CallbackQuer
                 await callback.answer()
             return False
 
-        name, description, deadline, status = task_info
-        has_report = has_any_reports(task_id)
+        name, description, deadline, status, report_type = task_info
+        is_done = status == "✅ Завершена"
+        has_report = has_any_reports(task_id) and report_type != 'no_report'
 
         message_text = (
             f"📌 {name}\n\n"
@@ -51,16 +46,19 @@ async def show_task_description(message_or_callback: Union[Message, CallbackQuer
             f"🔄 Статус: {status}"
         )
 
-        keyboard = get_task_description_kb(task_id, status == "✅ Завершена", has_report)
+        keyboard = get_task_description_kb(
+            task_id=task_id,
+            is_done=is_done,
+            report_type=report_type,
+            has_reports=has_report
+        )
 
-        # Пытаемся редактировать, если возможно
         try:
             await message.edit_text(
                 text=message_text,
                 reply_markup=keyboard
             )
         except:
-            # Если редактирование невозможно, отправляем новое сообщение
             await message.answer(
                 text=message_text,
                 reply_markup=keyboard
@@ -80,7 +78,6 @@ async def show_task_description(message_or_callback: Union[Message, CallbackQuer
 
 @router.callback_query(F.data.startswith("view_report_"))
 async def handle_view_report(callback: CallbackQuery):
-    """Обработчик просмотра отчетов"""
     try:
         task_id = int(callback.data.split("_")[2])
         report_data = get_full_report(task_id)
@@ -89,7 +86,6 @@ async def handle_view_report(callback: CallbackQuery):
             await callback.answer("ℹ️ Отчеты отсутствуют")
             return
 
-        # Отправляем текстовую часть
         await callback.message.answer(
             format_report_text(report_data),
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
@@ -100,39 +96,20 @@ async def handle_view_report(callback: CallbackQuery):
             ]])
         )
 
-        # Отправляем файлы с правильными подписями
         for entry in report_data:
             if entry.get('type') == 'file':
                 try:
-                    file_type = {
-                        'document': 'Документ',
-                        'photo': 'Фото',
-                        'video': 'Видео',
-                        'audio': 'Аудио'
-                    }.get(entry.get('file_type'), 'Файл')
+                    file_type = entry.get('file_type', 'document')
+                    caption = f"{file_type.capitalize()} от {entry.get('timestamp', 'N/A')}"
 
-                    caption = f"{file_type} от {entry.get('timestamp', 'N/A')}"
+                    method = {
+                        'document': callback.message.answer_document,
+                        'photo': callback.message.answer_photo,
+                        'video': callback.message.answer_video,
+                        'audio': callback.message.answer_audio
+                    }.get(file_type, callback.message.answer_document)
 
-                    if entry.get('file_type') == 'document':
-                        await callback.message.answer_document(
-                            entry.get('file_id'),
-                            caption=caption
-                        )
-                    elif entry.get('file_type') == 'photo':
-                        await callback.message.answer_photo(
-                            entry.get('file_id'),
-                            caption=caption
-                        )
-                    elif entry.get('file_type') == 'video':
-                        await callback.message.answer_video(
-                            entry.get('file_id'),
-                            caption=caption
-                        )
-                    elif entry.get('file_type') == 'audio':
-                        await callback.message.answer_audio(
-                            entry.get('file_id'),
-                            caption=caption
-                        )
+                    await method(entry['file_id'], caption=caption)
                 except Exception as e:
                     logger.error(f"Ошибка отправки файла: {e}")
 
@@ -142,37 +119,56 @@ async def handle_view_report(callback: CallbackQuery):
         await callback.answer("⚠️ Ошибка при отображении отчета")
 
 
+@router.callback_query(F.data.startswith("report_options_"))
+async def handle_report_options(callback: CallbackQuery):
+    try:
+        task_id = int(callback.data.split("_")[2])
+        task_info = get_task_description(task_id)
+
+        if not task_info:
+            await callback.answer("⚠️ Задача не найдена")
+            return
+
+        report_type = task_info[4]
+        keyboard = get_report_options_kb(task_id, report_type)
+        await callback.message.edit_reply_markup(reply_markup=keyboard)
+        await callback.answer()
+    except Exception as e:
+        logger.error(f"Ошибка обработки опций отчета: {e}")
+        await callback.answer("⚠️ Ошибка при обработке запроса")
+
+
 @router.callback_query(F.data.startswith("view_task_"))
 async def handle_view_task(callback: CallbackQuery, state: FSMContext):
-    """Обработчик просмотра задачи"""
     task_id = int(callback.data.split("_")[2])
     await show_task_description(callback, task_id)
 
 
 @router.callback_query(F.data.startswith("change_status_"))
 async def handle_change_status(callback: CallbackQuery, state: FSMContext):
-    """Обработчик изменения статуса"""
     task_id = int(callback.data.split("_")[2])
+    result = change_task_status(task_id)
 
-    change_task_st = change_task_status(task_id)
-    if change_task_st[0]:
-        await show_task_description(callback.message, task_id)
+    if result[0]:
         bot = Bot(TOKEN)
-        await bot.send_message(chat_id=change_task_st[2], text=f'Задача "{change_task_st[1]}" выполнена')
-        await bot.session.close()
-        await callback.answer("Статус задачи обновлен!")
+        try:
+            await bot.send_message(
+                chat_id=result[2],
+                text=f'Задача "{result[1]}" выполнена'
+            )
+            await show_task_description(callback.message, task_id)
+        finally:
+            await bot.session.close()
+        await callback.answer("✅ Задача завершена")
     else:
-        await callback.answer("⚠️ Не удалось изменить статус")
+        await callback.answer("⚠️ Не удалось завершить задачу")
 
 
 @router.callback_query(F.data == "back_to_tasks_list")
 async def handle_back_to_list(callback: CallbackQuery, state: FSMContext):
-    """Обработчик возврата к списку задач"""
     try:
         username = callback.from_user.username
         keyboard = list_of_tasks_kb(username)
-
-        # Всегда редактируем сообщение
         await callback.message.edit_text(
             "📋 Список задач:",
             reply_markup=keyboard
