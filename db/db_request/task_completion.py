@@ -14,7 +14,7 @@ def save_text_report(task_id: int, user_id: int, text: str) -> bool:
             cursor = conn.cursor()
 
             # Проверка типа задачи
-            cursor.execute("SELECT report FROM Tasks WHERE id = ?", (task_id,))
+            cursor.execute("SELECT report_format FROM Tasks WHERE id = ?", (task_id,))
             result = cursor.fetchone()
             if not result or result[0] != 'message':
                 logger.error("Текстовые отчеты не разрешены для этой задачи")
@@ -58,7 +58,7 @@ def save_file_report(task_id: int, user_id: int, file_id: str, file_type: str) -
             cursor = conn.cursor()
 
             # Проверка типа задачи
-            cursor.execute("SELECT report FROM Tasks WHERE id = ?", (task_id,))
+            cursor.execute("SELECT report_format FROM Tasks WHERE id = ?", (task_id,))
             result = cursor.fetchone()
             if not result or result[0] != 'file':
                 logger.error("Файловые отчеты не разрешены для этой задачи")

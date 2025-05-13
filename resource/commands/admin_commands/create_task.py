@@ -151,6 +151,12 @@ async def create_task_get_report(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     create_task(data, callback.from_user.username)
     info = [data['name'], data['description'], data['deadline'], data['report']]
+    if info[3] == 'no_report':
+        info[3] = 'Без отчета'
+    elif info[3] == 'message':
+        info[3] = 'Сообщение'
+    elif info[3] == 'file':
+        info[3] = 'Файл'
     interns = '\n'.join(
         [' - @'.join(i) for i in list_of_interns(callback.from_user.username) if i[1] in data['selected']])
     ids = interns_ids(data['selected'])

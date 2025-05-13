@@ -13,7 +13,7 @@ def get_task_description(task_id: int) -> Optional[Tuple[str, str, str, str, str
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT name, description, deadline, done, report 
+                SELECT name, description, deadline, done, report_format 
                 FROM Tasks 
                 WHERE id = ?
             """, (task_id,))
@@ -21,7 +21,7 @@ def get_task_description(task_id: int) -> Optional[Tuple[str, str, str, str, str
             task = cursor.fetchone()
             if task:
                 name, description, deadline, done, report_type = task
-                status = "✅ Завершена" if done == 'True' else "🔄 В работе"
+                status = "✅ Завершена" if done == True else "🔄 В работе"
                 return name, description, deadline, status, report_type
             return None
     except sqlite3.Error as e:
@@ -88,11 +88,11 @@ def change_task_status(task_id: int) -> tuple:
             cursor.execute("SELECT done, admin, name FROM Tasks WHERE id = ?", (task_id,))
             result = cursor.fetchone()
 
-            if not result or result[0] == 'True':
+            if not result or result[0]:
                 return (False, None, None)
 
             cursor.execute(
-                "UPDATE Tasks SET done = 'True' WHERE id = ?",
+                "UPDATE Tasks SET done = True WHERE id = ?",
                 (task_id,)
             )
             admin = cursor.execute(f'SELECT id FROM Users WHERE username="{result[1]}"').fetchone()[0]

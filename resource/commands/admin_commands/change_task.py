@@ -7,14 +7,13 @@ from datetime import datetime
 
 from config import TOKEN
 from db.db_request.list_interns import list_of_interns, interns_ids
-from db.db_request.list_tasks import tasks_info_admin
 from db.db_request.task_description import get_full_report
 from ..forms import Form
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.back_button import back_kb
 from ...keyboards.change_task_group_profile_kb import change_task_ikb, report_format_ikb
 from ...keyboards.list_of_interns_kb import list_of_interns_select_kb, list_of_interns_selected_kb
-from db.db_request.change_task import change_tasks_info
+from db.db_request.change_task import change_tasks_info, change_tasks_done
 from db.db_request.delete_task import delete_task
 from db.db_request.list_tasks import tasks_info_admin
 
@@ -44,7 +43,7 @@ async def change_delete_task(callback: CallbackQuery, state: FSMContext):
         await state.set_state(Form.change_task)
         await state.update_data(task=task)
     elif callback.data == 'return':
-        if func_change_task(task, 'done', 'False'):
+        if change_tasks_done(task):
             await callback.message.edit_reply_markup(
                 reply_markup=InlineKeyboardMarkup(
                     inline_keyboard=[[InlineKeyboardButton(text='Вернуть на доработку', callback_data='return')]]))
@@ -64,22 +63,13 @@ async def change_delete_task(callback: CallbackQuery, state: FSMContext):
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[[InlineKeyboardButton(text='Посмотреть отчет', callback_data='report')]]))
         if info[-2] == 'Файл':
-            report_data = get_full_report(task)
-
-            for entry in report_data:
-                if entry.get('type') == 'file':
-                    if entry.get('file_type') == 'document':
-                        await callback.message.answer_document(entry.get('file_id'),
-                                                               reply_markup=admin_keyboard)
-                    elif entry.get('file_type') == 'photo':
-                        await callback.message.answer_photo(entry.get('file_id'),
-                                                               reply_markup=admin_keyboard)
-                    elif entry.get('file_type') == 'video':
-                        await callback.message.answer_video(entry.get('file_id'),
-                                                               reply_markup=admin_keyboard)
-                    elif entry.get('file_type') == 'audio':
-                        await callback.message.answer_audio(entry.get('file_id'),
-                                                               reply_markup=admin_keyboard)
+            report = [entry for entry in get_full_report(task)][-1]
+            if report.get('file_type') == 'document':
+                await callback.message.answer_document(report.get('file_id'),
+                                                       reply_markup=admin_keyboard)
+            elif report.get('file_type') == 'photo':
+                await callback.message.answer_photo(report.get('file_id'),
+                                                    reply_markup=admin_keyboard)
         else:
             report = [entry for entry in get_full_report(task)][-1]
             report = report.get('content', '')
@@ -252,7 +242,7 @@ async def change_task_report(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     task = data['task']
 
-    if func_change_task(task, 'report', callback.data):
+    if func_change_task(task, 'report_format', callback.data):
         info = tasks_info_admin(task)
         interns = '\n'.join(
             [' - @'.join(i) for i in list_of_interns(callback.from_user.username) if i[1] in info[2].split()])

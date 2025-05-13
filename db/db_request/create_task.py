@@ -8,7 +8,7 @@ def new_task(task, admin):
 
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
-    cursor.execute('''INSERT INTO Tasks (name, interns, admin, description, deadline, report, done) VALUES (?, ?, ?, ?, ?, ?, ?)''',
-                   (name, interns, admin, description, deadline, report, 'False'))
+    cursor.execute('''INSERT INTO Tasks (name, interns, admin, description, deadline, report_format, done) VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                   (name, interns, admin, description, deadline, report, False))
     connection.commit()
     connection.close()

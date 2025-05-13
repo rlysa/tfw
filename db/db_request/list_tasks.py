@@ -23,7 +23,7 @@ def list_tasks(intern_username: str) -> List[Tuple[int, str, str, str, str]]:
                 task_id, name, description, done, deadline, interns = task
                 # Проверяем, есть ли текущий пользователь в списке стажёров
                 if intern_username in interns.split():
-                    status = "completed" if done != 'False' else "in_progress"
+                    status = "completed" if done else "in_progress"
                     tasks.append((task_id, name, description, status, deadline))
 
             return tasks
@@ -49,6 +49,7 @@ def tasks_info_admin(id):
     cursor = connection.cursor()
     tasks = cursor.execute(f'SELECT * FROM Tasks WHERE id="{id}"').fetchall()
     tasks = [i for i in tasks[0]]
+    tasks.pop(7)
     if tasks[-2] == 'no_report':
         tasks[-2] = 'Без отчета'
     elif tasks[-2] == 'message':

@@ -11,5 +11,6 @@ class Tasks(SqlAlchemyBase):
     admin = sqlalchemy.Column(sqlalchemy.String)
     description = sqlalchemy.Column(sqlalchemy.String)
     deadline = sqlalchemy.Column(sqlalchemy.Date)
+    report_format = sqlalchemy.Column(sqlalchemy.Date)
     report = sqlalchemy.Column(sqlalchemy.String)
-    done = sqlalchemy.Column(sqlalchemy.String, default='False')
+    done = sqlalchemy.Column(sqlalchemy.Boolean, default=False)

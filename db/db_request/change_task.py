@@ -13,3 +13,15 @@ def change_tasks_info(tasks_id, field, value):
         return True
     except Exception:
         return False
+
+
+def change_tasks_done(tasks_id):
+    try:
+        connection = sqlite3.connect(DB_NAME)
+        cursor = connection.cursor()
+        cursor.execute('UPDATE Tasks SET done=False WHERE id="{0}"'.format(tasks_id))
+        connection.commit()
+        connection.close()
+        return True
+    except Exception:
+        return False

@@ -52,7 +52,7 @@ def tasks_commands(report, done):
     buttons = [[InlineKeyboardButton(text='Изменить', callback_data='change')],
                [InlineKeyboardButton(text='Удалить', callback_data='delete')],
                [InlineKeyboardButton(text='Меню команд', callback_data='back')]]
-    if done != 'False':
+    if done:
         buttons.insert(2,
                        [InlineKeyboardButton(text='Вернуть на доработку', callback_data='return')])
         if report != 'Без отчета':
