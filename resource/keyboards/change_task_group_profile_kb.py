@@ -48,6 +48,7 @@ what_change_profile_buttons = [
 what_change_profile_ikb = InlineKeyboardMarkup(inline_keyboard=what_change_profile_buttons)
 
 delete_intern_buttons = [
+    [InlineKeyboardButton(text='Резюме', callback_data='resume')],
     [InlineKeyboardButton(text='Удалить', callback_data='delete')],
     [InlineKeyboardButton(text='Меню команд', callback_data='back')]
 ]

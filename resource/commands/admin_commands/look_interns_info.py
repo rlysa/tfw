@@ -1,9 +1,11 @@
+import json
+
 from aiogram import Router
 from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 
 from ..forms import Form
-from db.db_request.list_interns import list_of_interns, interns_info
+from db.db_request.list_interns import list_of_interns, interns_info, interns_resume
 from db.db_request.delete_user import delete_user
 from ...keyboards.admin_keyboard import admin_keyboard
 from ...keyboards.back_button import back_kb
@@ -59,6 +61,17 @@ async def delete_intern(callback: CallbackQuery, state: FSMContext):
                 inline_keyboard=[[InlineKeyboardButton(text='Удалить', callback_data='delete')]]))
         await callback.message.answer(text=f'Стажер удален',
                                       reply_markup=admin_keyboard)
+        await state.set_state(Form.main_admin)
+    elif callback.data == 'resume':
+        data = await state.get_data()
+        username = data['username']
+        await callback.message.edit_reply_markup(
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[[InlineKeyboardButton(text='Резюме', callback_data='resume')]]))
+        report = json.loads(interns_resume(username))
+        if report.get('file_type') == 'document':
+            await callback.message.answer_document(report.get('file_id'),
+                                                   reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
 
 

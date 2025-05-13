@@ -30,9 +30,17 @@ def interns_info(username):
         interns_groups = ['']
     if not interns_tasks:
         interns_tasks = ['']
-    intern = [' '.join([i for i in intern]), interns_skills[0], '\n'.join(interns_groups), '\n'.join(interns_tasks)]
+    intern = [' '.join([i for i in intern]), interns_skills, '\n'.join(interns_groups), '\n'.join(interns_tasks)]
     connection.close()
     return intern
+
+
+def interns_resume(username):
+    connection = sqlite3.connect(DB_NAME)
+    cursor = connection.cursor()
+    resume = cursor.execute(f'''SELECT resume FROM Interns WHERE username="{username}"''').fetchone()
+    connection.close()
+    return resume[0]
 
 
 def interns_ids(interns_username):
