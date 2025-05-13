@@ -9,6 +9,10 @@ def get_my_info_kb() -> InlineKeyboardMarkup:
                 InlineKeyboardButton(
                     text="✏️ Изменить данные",
                     callback_data="change_my_info"
+                ),
+                InlineKeyboardButton(
+                    text="Резюме",
+                    callback_data="resume"
                 )
             ],
             [

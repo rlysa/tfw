@@ -34,15 +34,15 @@ def update_user_info(username: str, update_data: Dict[str, str]) -> bool:
         return False
 
 
-def update_intern_skills(username: str, new_skills: str) -> bool:
+def update_intern_skills(username: str, field, new_value: str) -> bool:
     """Обновляет навыки стажёра в таблице Interns"""
     try:
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
 
             cursor.execute(
-                "UPDATE Interns SET skills = ? WHERE username = ?",
-                (new_skills, username)
+                f"UPDATE Interns SET {field} = ? WHERE username = ?",
+                (new_value, username)
             )
 
             conn.commit()

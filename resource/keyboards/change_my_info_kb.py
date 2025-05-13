@@ -7,10 +7,11 @@ def get_edit_select_kb() -> InlineKeyboardMarkup:
         inline_keyboard=[
             [
                 InlineKeyboardButton(text="Фамилия", callback_data="edit_surname"),
-                InlineKeyboardButton(text="Имя", callback_data="edit_name")
+                InlineKeyboardButton(text="Имя", callback_data="edit_name"),
+                InlineKeyboardButton(text="Отчество", callback_data="edit_middlename")
             ],
             [
-                InlineKeyboardButton(text="Отчество", callback_data="edit_middlename"),
+                InlineKeyboardButton(text="Резюме", callback_data="edit_resume"),
                 InlineKeyboardButton(text="Навыки", callback_data="edit_skills")
             ],
             [

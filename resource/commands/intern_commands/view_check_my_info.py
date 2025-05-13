@@ -1,3 +1,4 @@
+
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
 from aiogram.filters import Command
@@ -53,7 +54,6 @@ async def show_user_info(callback: CallbackQuery, state: FSMContext):
             text=format_complete_user_info(user_data),
             reply_markup=get_my_info_kb()
         )
-        await state.set_state(Form.view_my_info)
 
     except Exception as e:
         logger.error(f"Ошибка при показе информации: {e}")

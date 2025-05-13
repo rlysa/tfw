@@ -1,9 +1,12 @@
+import json
+
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from db.db_request.change_my_info_db import update_user_info, update_intern_skills
 from db.db_request.check_my_info import get_full_user_info
+from db.db_request.list_interns import interns_resume
 from resource.keyboards.change_my_info_kb import get_edit_select_kb, get_back_to_info_kb
 from resource.keyboards.check_my_info_kb import get_my_info_kb
 from resource.commands.forms import Form
@@ -37,16 +40,29 @@ async def start_change_info(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
+@router.callback_query(F.data == "resume")
+async def start_change_info(callback: CallbackQuery, state: FSMContext):
+    report = json.loads(interns_resume(callback.from_user.username))
+    if report.get('file_type') == 'document':
+        await callback.message.answer_document(report.get('file_id'))
+    await state.set_state(Form.view_my_info)
+    await callback.answer()
+
+
 @router.callback_query(F.data.startswith("edit_"), Form.changing_info)
 async def select_field_to_edit(callback: CallbackQuery, state: FSMContext):
     """Выбор поля для редактирования"""
     field = callback.data.split("_")[1]
     await state.update_data(editing_field=field)
 
-    await callback.message.edit_text(
-        f"✏️ Введите новое значение для {FIELD_NAMES.get(field, field)}:",
-        reply_markup=get_back_to_info_kb()
-    )
+    if callback.data == 'edit_resume':
+        await callback.message.edit_text('Прикрепите новое резюме:',
+                                         reply_markup=get_back_to_info_kb())
+    else:
+        await callback.message.edit_text(
+            f"✏️ Введите новое значение для {FIELD_NAMES.get(field, field)}:",
+            reply_markup=get_back_to_info_kb()
+        )
     await callback.answer()
 
 
@@ -60,9 +76,16 @@ async def process_field_edit(message: Message, state: FSMContext):
         await message.answer("❌ Не выбрано поле для редактирования")
         return
 
-    new_value = message.text.strip()
+    if message.document:
+        new_value = json.dumps({
+            'type': 'file',
+            'file_id': message.document.file_id,
+            'file_type': 'document',
+        })
+    else:
+        new_value = message.text.strip()
 
-    if not new_value or len(new_value) > 100:
+    if not new_value or (len(new_value) > 100 and not message.document):
         await message.answer("❌ Некорректное значение. Длина должна быть от 1 до 100 символов.")
         return
 
@@ -71,8 +94,8 @@ async def process_field_edit(message: Message, state: FSMContext):
         await message.answer("❌ Не удалось определить ваш username")
         return
 
-    if field == "skills":
-        success = update_intern_skills(username, new_value)
+    if field in ["skills", 'resume']:
+        success = update_intern_skills(username, field, new_value)
     else:
         db_field = FIELD_DB_MAPPING.get(field, field)
         success = update_user_info(username, {db_field: new_value})
