@@ -112,9 +112,9 @@ async def registration_get_resume(message: Message, state:FSMContext):
     await state.set_state(Form.main_intern)
 
 
-@router.callback_query()
-async def accept_new_user(callback: CallbackQuery):
-    print(callback.data)
+# @router.callback_query()
+# async def accept_new_user(callback: CallbackQuery):
+#     print(callback.data)
 
 
 def add_new_user(user_id, username, user):
