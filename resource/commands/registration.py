@@ -1,5 +1,5 @@
 from aiogram import Router, Bot
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
 from .forms import Form
@@ -8,7 +8,6 @@ from db.db_request.new_user import new_user
 from db.db_request.is_admins_key import is_admins_key
 from db.db_request.get_admins_id import get_admins_id
 from ..keyboards.admin_keyboard import admin_keyboard
-from ..keyboards.accept_new_user import accept_new_user_kb
 
 
 router = Router()
@@ -73,7 +72,7 @@ async def registration_get_middle_name(message: Message, state: FSMContext):
         await state.set_state(Form.registration_skills)
     else:
         add_new_user(message.from_user.id, message.from_user.username, data)
-        await message.answer('Регистрация завершена (Ждите подтверждения - реализовать)',
+        await message.answer('Регистрация завершена',
                              reply_markup=admin_keyboard)
         await state.set_state(Form.main_admin)
 
@@ -101,20 +100,14 @@ async def registration_get_resume(message: Message, state:FSMContext):
     }
     await state.update_data(resume=resume)
 
-    await message.answer('Регистрация завершена (Ждите подтверждения - реализовать)')
+    await message.answer('Регистрация завершена')
     bot = Bot(token=TOKEN)
     data = await state.get_data()
-    # await bot.send_message(text=f'Пользователь @{message.from_user.username} {data['surname']} {data['name']} {data['middle_name']} хочет зарегистрироваться',
-    #                        chat_id=get_admins_id(data['admin']),
-    #                        reply_markup=accept_new_user_kb)
+    await bot.send_message(text=f'Зарегистрирован новый пользователь: @{message.from_user.username} {data['surname']} {data['name']} {data['middle_name']}',
+                           chat_id=get_admins_id(data['admin']))
     await bot.session.close()
-    add_new_user(message.from_user.id, message.from_user.username, data)  # делать только после регистрации
+    add_new_user(message.from_user.id, message.from_user.username, data)
     await state.set_state(Form.main_intern)
-
-
-# @router.callback_query()
-# async def accept_new_user(callback: CallbackQuery):
-#     print(callback.data)
 
 
 def add_new_user(user_id, username, user):
